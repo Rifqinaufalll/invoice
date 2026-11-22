@@ -185,9 +185,10 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     </div>
 
     <div class="actions">
-      <button class="btn line" id="btnSave" type="button">Simpan</button>
       <button class="btn" id="btnPdf" type="button">Buat PDF</button>
+      <button class="btn" id="btnImg" type="button">Buat Gambar</button>
     </div>
+    <div class="actions"><button class="btn line" id="btnSave" type="button">Simpan saja</button></div>
     <div class="actions" id="editRow" style="display:none">
       <button class="btn ghost sm" id="btnDup" type="button">Duplikat untuk order baru</button>
       <button class="btn danger sm" id="btnDelete" type="button">Hapus</button>
@@ -461,7 +462,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   async function deliverFile(blob, name, type){
     const file = new File([blob], name, { type });
     if(navigator.canShare && navigator.canShare({ files:[file] })){
-      try{ await navigator.share({ files:[file], title:name }); return 'shared'; }
+      try{ await navigator.share({ files:[file] }); return 'shared'; }
       catch(e){ if(e && e.name === 'AbortError') return 'cancelled'; }
     }
     const url = URL.createObjectURL(blob); const a = document.createElement('a');
@@ -471,7 +472,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   }
 
   /* ---------- PDF ---------- */
-  async function makePdf(rec){
+  async function renderCanvas(rec){
     if(!window.html2canvas || !window.jspdf) throw new Error('lib');
     const host = document.createElement('div');
     host.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;height:1123px';
@@ -479,27 +480,35 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     document.body.appendChild(host);
     try{
       if(document.fonts && document.fonts.ready) await document.fonts.ready;
-      const canvas = await html2canvas(host.firstElementChild, { scale:2, backgroundColor:'#ffffff', useCORS:true });
-      const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
-      pdf.addImage(canvas.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, 595.28, 841.89);
-      return pdf.output('blob');
+      return await html2canvas(host.firstElementChild, { scale:2, backgroundColor:'#ffffff', useCORS:true });
     } finally { host.remove(); }
   }
-  async function exportPdf(){
+  async function makePdf(rec){
+    const canvas = await renderCanvas(rec);
+    const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, 595.28, 841.89);
+    return pdf.output('blob');
+  }
+  async function makeImage(rec){
+    const canvas = await renderCanvas(rec);
+    return new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('img')), 'image/png'));
+  }
+  async function exportFile(kind){
     const rec = save(); if(!rec) return;
-    const btn = $('#btnPdf'); btn.disabled = true; const old = btn.textContent; btn.textContent = 'Membuat…';
+    const btn = $(kind === 'pdf' ? '#btnPdf' : '#btnImg'); btn.disabled = true; const old = btn.textContent; btn.textContent = 'Membuat…';
     try{
-      const blob = await makePdf(rec);
+      const blob = kind === 'pdf' ? await makePdf(rec) : await makeImage(rec);
       const safe = s => s.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim();
-      const name = 'Invoice - ' + safe(rec.client) + ' - ' + rec.date + (rec.number ? ' - ' + safe(rec.number) : '') + '.pdf';
-      const r = await deliverFile(blob, name, 'application/pdf');
-      if(r === 'downloaded') toast('PDF dibuat');
+      const name = 'Invoice - ' + safe(rec.client) + ' - ' + rec.date + (rec.number ? ' - ' + safe(rec.number) : '') + (kind === 'pdf' ? '.pdf' : '.png');
+      const r = await deliverFile(blob, name, kind === 'pdf' ? 'application/pdf' : 'image/png');
+      if(r === 'downloaded') toast(kind === 'pdf' ? 'PDF dibuat' : 'Gambar dibuat');
     }catch(e){
-      toast('Gagal membuat PDF');
+      toast('Gagal membuat ' + (kind === 'pdf' ? 'PDF' : 'gambar'));
     }finally{ btn.disabled = false; btn.textContent = old; }
   }
-  $('#btnPdf').addEventListener('click', exportPdf);
-  window.__makePdf = makePdf; // untuk pengujian
+  $('#btnPdf').addEventListener('click', () => exportFile('pdf'));
+  $('#btnImg').addEventListener('click', () => exportFile('img'));
+  window.__makePdf = makePdf; window.__makeImage = makeImage; // untuk pengujian
 
   /* ---------- riwayat ---------- */
   const curMonth = () => todayISO().slice(0,7);
