@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#3330d0">
 <meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<script>/* terapkan tema pilihan sebelum halaman digambar, supaya tidak berkedip */try{var __s=JSON.parse(localStorage.getItem('inv-settings')||'{}');if(__s.theme==='light'||__s.theme==='dark')document.documentElement.setAttribute('data-theme',__s.theme)}catch(e){}</script>
 <title>Invoice Endorse</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -19,11 +21,36 @@
 <style>
 @font-face{font-family:'Lexend';font-style:normal;font-weight:400 700;font-display:swap;src:url(fonts/lexend-latin.woff2) format('woff2')}
 :root{
-  --bg:#f3f4fa; --card:#fff; --ink:#1b2333; --muted:#64748b; --line:#e2e6f0;
-  --brand:#3330d0; --brand-ink:#fff; --ok:#0f7b4a; --ok-bg:#e1f5ea; --warn:#9a5b00; --warn-bg:#fff1d6; --danger:#c0322b;
+  color-scheme:light;
+  --bg:#f3f4fa; --card:#fff; --ink:#1b2333; --muted:#566680; --line:#e2e6f0; --ph:#6a768c;
+  --brand:#3330d0; --btn:#3330d0; --btn-ink:#fff; --field:#fff; --soft:#fafbff; --ghost:#eceefa;
+  --ok:#0f7b4a; --ok-bg:#e1f5ea; --warn:#9a5b00; --warn-bg:#fff1d6; --danger:#c0322b; --danger-bg:#fdecea;
+  --info-bg:#e8e9fb; --info-ink:#25239a; --banner-ink:#6b4100; --warn-btn:#6b4100; --warn-btn-ink:#fff;
+  --seg:#e6e8f4; --seg-on:#fff; --tabs-bg:rgba(255,255,255,.94); --toast-bg:#1b2333; --toast-ink:#fff;
+}
+/* tema gelap: dipilih manual (data-theme) atau otomatis mengikuti pengaturan iPhone */
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e1120; --card:#171b2e; --ink:#e9ebf7; --muted:#9ba5c0; --line:#2a2f48; --ph:#8089a6;
+  --brand:#a8a6ff; --btn:#4d4ae8; --btn-ink:#fff; --field:#0f1226; --soft:#1b2036; --ghost:#262b4c;
+  --ok:#6fe3a6; --ok-bg:#12382b; --warn:#ffd27a; --warn-bg:#3a2f10; --danger:#ff8f86; --danger-bg:#3b1f22;
+  --info-bg:#25294f; --info-ink:#cfceff; --banner-ink:#ffe2a8; --warn-btn:#ffd27a; --warn-btn-ink:#2b2108;
+  --seg:#1c2036; --seg-on:#343a63; --tabs-bg:rgba(18,21,38,.94); --toast-bg:#e9ebf7; --toast-ink:#10142a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0e1120; --card:#171b2e; --ink:#e9ebf7; --muted:#9ba5c0; --line:#2a2f48; --ph:#8089a6;
+    --brand:#a8a6ff; --btn:#4d4ae8; --btn-ink:#fff; --field:#0f1226; --soft:#1b2036; --ghost:#262b4c;
+    --ok:#6fe3a6; --ok-bg:#12382b; --warn:#ffd27a; --warn-bg:#3a2f10; --danger:#ff8f86; --danger-bg:#3b1f22;
+    --info-bg:#25294f; --info-ink:#cfceff; --banner-ink:#ffe2a8; --warn-btn:#ffd27a; --warn-btn-ink:#2b2108;
+    --seg:#1c2036; --seg-on:#343a63; --tabs-bg:rgba(18,21,38,.94); --toast-bg:#e9ebf7; --toast-ink:#10142a;
+  }
 }
 *{box-sizing:border-box}
+html{background:var(--bg)}
 html,body{margin:0}
+::placeholder{color:var(--ph);opacity:1}
 body{background:var(--bg);color:var(--ink);font-family:'Lexend',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
 .app{max-width:560px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
 .top{padding:calc(18px + env(safe-area-inset-top)) 0 10px}
@@ -34,10 +61,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Lexend',system-ui,-apple
 .card h2{margin:0 0 12px;font-size:15px;font-weight:600}
 label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin:12px 0 5px}
 label:first-of-type{margin-top:0}
-label .opt{font-weight:400;color:#94a3b8}
+label .opt{font-weight:400;color:var(--muted)}
 label.check{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);margin:14px 0 0}
 label.check input{width:20px;height:20px;accent-color:var(--brand);flex:0 0 auto}
-input[type=text],input[type=date],input[type=search],select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:46px;appearance:none;-webkit-appearance:none}
+input[type=text],input[type=date],input[type=search],select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:46px;appearance:none;-webkit-appearance:none}
 select{background-image:linear-gradient(45deg,transparent 50%,#64748b 50%),linear-gradient(135deg,#64748b 50%,transparent 50%);background-position:calc(100% - 19px) 50%,calc(100% - 14px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
 input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:transparent}
 .row{display:flex;gap:10px;align-items:flex-end}
@@ -47,18 +74,19 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .money span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;pointer-events:none}
 .money input{padding-left:42px}
 .hint{font-size:12px;color:var(--muted);margin:6px 0 0}
-.it{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;background:#fafbff}
+.it{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;background:var(--soft)}
 .it .row{margin-top:8px;align-items:center}
-.it .x{flex:0 0 46px;height:46px;border:1px solid var(--line);background:#fff;border-radius:12px;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
+.it .x{flex:0 0 46px;height:46px;border:1px solid var(--line);background:var(--field);border-radius:12px;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
 .it .x:disabled{opacity:.35;cursor:default}
 .totalbox{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
 .totalbox span{color:var(--muted);font-size:13px;font-weight:500}
 .totalbox strong{font-size:20px}
-.btn{font:inherit;font-weight:600;font-size:15px;border:0;border-radius:12px;padding:12px 16px;min-height:46px;cursor:pointer;background:var(--brand);color:var(--brand-ink)}
-.btn.ghost{background:#eceefa;color:var(--brand)}
-.btn.line{background:#fff;color:var(--ink);border:1px solid var(--line)}
-.btn.danger{background:#fdecea;color:var(--danger)}
+.btn{font:inherit;font-weight:600;font-size:15px;border:0;border-radius:12px;padding:12px 16px;min-height:46px;cursor:pointer;background:var(--btn);color:var(--btn-ink)}
+.btn.ghost{background:var(--ghost);color:var(--brand)}
+.btn.line{background:var(--field);color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:var(--danger-bg);color:var(--danger)}
 .btn.red{background:#d32f2f;color:#fff}
+.btn.green{background:#15803d;color:#fff}
 .btn.sm{min-height:38px;padding:8px 12px;font-size:13px}
 .btn:disabled{opacity:.5;cursor:default}
 .btn:active{transform:scale(.98)}
@@ -70,32 +98,48 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .preview-wrap{width:100%;overflow:hidden;border-radius:10px;border:1px solid var(--line);background:#fff;box-shadow:0 6px 24px rgba(30,30,80,.08)}
 #sheetScale{transform-origin:0 0;width:794px}
 
-.banner{background:var(--warn-bg);color:#6b4100;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:13px}
+.banner{background:var(--warn-bg);color:var(--banner-ink);border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:13px}
 .banner[hidden]{display:none}
 .banner p{margin:0 0 10px}
 .banner .acts{display:flex;gap:8px}
-.banner .btn{flex:1;background:#fff;color:#6b4100}
-.banner .btn.main{background:#6b4100;color:#fff}
-.banner.info{background:#e8e9fb;color:#25239a}
-.banner.info .btn{color:#25239a}
-.banner.info .btn.main{background:var(--brand);color:#fff}
+.banner .btn{flex:1;background:var(--field);color:var(--banner-ink)}
+.banner .btn.main{background:var(--warn-btn);color:var(--warn-btn-ink)}
+.banner.info{background:var(--info-bg);color:var(--info-ink)}
+.banner.info .btn{color:var(--info-ink)}
+.banner.info .btn.main{background:var(--btn);color:var(--btn-ink)}
 .hint.warn{color:var(--danger);font-weight:500}
-textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:78px;resize:vertical;appearance:none;-webkit-appearance:none}
+textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:78px;resize:vertical;appearance:none;-webkit-appearance:none}
 textarea:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:transparent}
-details.more{border:1px solid var(--line);border-radius:12px;background:#fafbff;margin-top:14px}
+details.more{border:1px solid var(--line);border-radius:12px;background:var(--soft);margin-top:14px}
 details.more summary{cursor:pointer;padding:12px 14px;font-size:13px;font-weight:600;color:var(--brand);list-style:none}
 details.more summary::-webkit-details-marker{display:none}
 details.more summary::before{content:'+ '}
 details.more[open] summary::before{content:'– '}
 details.more .inner{padding:0 14px 14px}
+details.more summary b{color:var(--ink);font-weight:600}
+.mini.del{margin-left:auto;color:var(--danger)}
+.mrow{display:flex;align-items:center;gap:10px;padding:7px 0}
+.mrow .mn{flex:0 0 34px;font-size:13px;color:var(--muted);font-weight:600}
+.mrow .mbar{flex:1;min-width:0;height:10px}
+.mrow .mt{height:100%;background:var(--seg);border-radius:6px;overflow:hidden}
+.mrow .mt i{display:block;height:100%;background:var(--btn);border-radius:6px}
+.mrow .mv{flex:0 0 auto;min-width:112px;text-align:right;font-size:13px;font-weight:600}
+.mrow .mv small{display:block;font-weight:400;font-size:11px;color:var(--muted)}
+.crow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.crow:first-child{border-top:0}
+.crow .cl{min-width:0}
+.crow .cn{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crow .cm{font-size:12px;color:var(--muted)}
+.crow .cv{text-align:right;font-weight:600;font-size:14px;flex:0 0 auto}
+.crow .cv small{display:block;font-weight:400;font-size:11px;color:var(--muted)}
 .modal{position:fixed;inset:0;background:rgba(15,20,40,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:40}
 .modal[hidden]{display:none}
-.modal-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:380px}
+.modal-box{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:18px;width:100%;max-width:380px}
 .modal-box p{margin:0 0 14px;font-size:15px;line-height:1.5}
 .modal-acts{display:flex;flex-direction:column;gap:8px}
 
 /* tabs */
-.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:10}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--tabs-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:10}
 .tabs button{flex:1;font:inherit;font-size:12px;font-weight:500;background:none;border:0;color:var(--muted);padding:6px 4px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px}
 .tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .tabs button.on{color:var(--brand);font-weight:600}
@@ -111,14 +155,14 @@ details.more .inner{padding:0 14px 14px}
 .stat strong{display:block;font-size:17px;margin-top:2px}
 .stat.wide strong{font-size:22px}
 .stat em{font-style:normal;font-size:12px;color:var(--muted)}
-.seg{display:flex;background:#e6e8f4;border-radius:12px;padding:3px;margin-bottom:12px}
+.seg{display:flex;background:var(--seg);border-radius:12px;padding:3px;margin-bottom:12px}
 .seg button{flex:1;font:inherit;font-size:13px;font-weight:500;border:0;background:none;padding:8px 4px;border-radius:9px;color:var(--muted);cursor:pointer}
-.seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(30,30,80,.12)}
+.seg button.on{background:var(--seg-on);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(30,30,80,.12)}
 .item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;cursor:pointer}
 .item .r1{display:flex;gap:12px;align-items:center}
 .item .amt-sub{font-size:11px;color:var(--muted);text-align:right}
 .item .acts{display:flex;gap:8px;margin-top:10px}
-.mini{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:7px 12px;min-height:34px;cursor:pointer}
+.mini{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:10px;padding:7px 12px;min-height:34px;cursor:pointer}
 .mini:disabled{opacity:.5}
 .item .main{flex:1;min-width:0}
 .item .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -127,11 +171,11 @@ details.more .inner{padding:0 14px 14px}
 .chip{display:inline-block;font:inherit;font-size:11px;font-weight:600;border-radius:99px;padding:4px 10px;border:0;margin-top:5px;cursor:pointer}
 .chip.paid{background:var(--ok-bg);color:var(--ok)}
 .chip.unpaid{background:var(--warn-bg);color:var(--warn)}
-.chip.part{background:#e8e9fb;color:#25239a}
+.chip.part{background:var(--info-bg);color:var(--info-ink)}
 .empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:14px}
 .searchbar{margin-bottom:12px}
 
-.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#1b2333;color:#fff;font-size:14px;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:20;max-width:90vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--toast-bg);color:var(--toast-ink);font-size:14px;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:20;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 /* ===== lembar invoice (ukuran A4: 794 x 1123) ===== */
@@ -248,8 +292,14 @@ details.more .inner{padding:0 14px 14px}
         <button class="btn ghost shrink" id="btnToday" type="button">Hari ini</button>
       </div>
 
-      <label for="invNo">Nomor invoice <span class="opt">(kosongkan kalau tidak perlu)</span></label>
-      <input type="text" id="invNo" placeholder="INV-202611-001" autocomplete="off" autocapitalize="characters">
+      <details class="more" id="noBox">
+        <summary>Nomor invoice: <b id="noSummary"></b></summary>
+        <div class="inner">
+          <label for="invNo">Nomor invoice <span class="opt">(kosongkan kalau tidak perlu dicetak)</span></label>
+          <input type="text" id="invNo" placeholder="INV-202611-001" autocomplete="off" autocapitalize="characters">
+          <p class="hint">Terisi otomatis dan ikut tercetak di invoice. Ubah kalau perlu.</p>
+        </div>
+      </details>
 
       <label>Item</label>
       <div id="items"></div>
@@ -273,7 +323,7 @@ details.more .inner{padding:0 14px 14px}
       <button class="btn red" id="btnPdf" type="button">Buat PDF</button>
       <button class="btn" id="btnImg" type="button">Buat Gambar</button>
     </div>
-    <div class="actions"><button class="btn line" id="btnSave" type="button">Simpan saja</button></div>
+    <div class="actions"><button class="btn green" id="btnSave" type="button">Simpan saja</button></div>
     <div class="actions" id="editRow" style="display:none">
       <button class="btn ghost sm" id="btnDup" type="button">Duplikat untuk order baru</button>
       <button class="btn danger sm" id="btnDelete" type="button">Hapus</button>
@@ -306,6 +356,35 @@ details.more .inner{padding:0 14px 14px}
     <div id="list"></div>
   </section>
 
+  <!-- ===== LAPORAN ===== -->
+  <section id="view-report" class="view">
+    <div class="monthbar">
+      <button class="btn line sm" id="yPrev" type="button" aria-label="Tahun sebelumnya">‹</button>
+      <div class="mlabel" id="yLabel"></div>
+      <button class="btn line sm" id="yNext" type="button" aria-label="Tahun berikutnya">›</button>
+    </div>
+    <div class="stats">
+      <div class="stat wide"><small>Uang yang sudah diterima</small><strong id="rpPaid">Rp 0</strong><em id="rpPaidN"></em></div>
+      <div class="stat"><small>Total tagihan</small><strong id="rpTotal">Rp 0</strong><em>semua invoice tahun ini</em></div>
+      <div class="stat"><small>Sisa tagihan</small><strong id="rpOpen">Rp 0</strong><em id="rpOpenN"></em></div>
+    </div>
+    <div class="card">
+      <h2>Per bulan</h2>
+      <div id="rpMonths"></div>
+      <p class="hint">Batang tebal: sudah diterima. Batang terang: total tagihan.</p>
+    </div>
+    <div class="card">
+      <h2>Per klien</h2>
+      <div class="seg" id="rpSort">
+        <button data-s="value" class="on" type="button">Terbesar</button>
+        <button data-s="order" type="button">Paling sering order</button>
+      </div>
+      <div id="rpClients"></div>
+    </div>
+    <div class="actions"><button class="btn line" id="btnXlsx2" type="button">Ekspor laporan ke Excel</button></div>
+    <p class="hint">Excel berisi tiga lembar: Invoice, Rekap Bulanan, dan Per Klien (semua tahun).</p>
+  </section>
+
   <!-- ===== PENGATURAN ===== -->
   <section id="view-settings" class="view">
     <div class="card">
@@ -324,6 +403,15 @@ details.more .inner{padding:0 14px 14px}
       <p class="hint">Tersimpan otomatis di perangkat ini.</p>
     </div>
     <div class="card">
+      <h2>Tampilan</h2>
+      <div class="seg" id="themeSeg" style="margin-bottom:8px">
+        <button data-t="auto" type="button">Otomatis</button>
+        <button data-t="light" type="button">Terang</button>
+        <button data-t="dark" type="button">Gelap</button>
+      </div>
+      <p class="hint">Otomatis mengikuti pengaturan iPhone. Lembar invoice (PDF dan gambar) selalu tampil terang.</p>
+    </div>
+    <div class="card">
       <h2>Cadangan data</h2>
       <p class="hint" style="margin:0 0 12px">Semua data hanya ada di perangkat ini. Simpan cadangan sesekali (misalnya ke Files atau kirim ke WhatsApp sendiri) supaya aman kalau ganti HP.</p>
       <div class="actions" style="margin:0 0 12px">
@@ -335,7 +423,7 @@ details.more .inner{padding:0 14px 14px}
         <button class="btn line" id="btnXlsx" type="button">Ekspor Excel (.xlsx)</button>
         <button class="btn line" id="btnCsv" type="button">CSV</button>
       </div>
-      <p class="hint" style="margin:0 0 12px">Tabel semua invoice untuk pembukuan. Excel (.xlsx) terbuka rapi sebagai tabel di Excel, Numbers, dan Google Sheets; CSV berupa teks biasa. Keduanya bukan cadangan: tidak bisa dipulihkan ke aplikasi.</p>
+      <p class="hint" style="margin:0 0 12px">Excel (.xlsx) berisi tiga lembar (Invoice, Rekap Bulanan, Per Klien) dan terbuka rapi di Excel, Numbers, dan Google Sheets. CSV berupa teks biasa berisi daftar invoice. Keduanya bukan cadangan: tidak bisa dipulihkan ke aplikasi.</p>
       <p class="hint" id="lastBackup" style="margin:0 0 12px"></p>
       <label for="sRemind">Ingatkan saya untuk cadangan</label>
       <select id="sRemind">
@@ -365,6 +453,8 @@ details.more .inner{padding:0 14px 14px}
     <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Buat</button>
   <button data-tab="history" type="button">
     <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Riwayat</button>
+  <button data-tab="report" type="button">
+    <svg viewBox="0 0 24 24"><path d="M5 20v-9M12 20V4M19 20v-6"/></svg>Laporan</button>
   <button data-tab="settings" type="button">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Pengaturan</button>
 </nav>
@@ -373,7 +463,7 @@ details.more .inner{padding:0 14px 14px}
 
 <script>
 (function(){
-  const APP_VERSION = '2.6'; // samakan dengan VERSION di sw.js
+  const APP_VERSION = '2.7'; // samakan dengan VERSION di sw.js
   const $ = s => document.querySelector(s);
   const store = {
     get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
@@ -381,7 +471,7 @@ details.more .inner{padding:0 14px 14px}
   };
   const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const MONTH_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  const BASE_SETTINGS = { bank:'', account:'', instagram:'', tiktok:'', defaultDesc:'Visit Kedai', autoNumber:true, backupDays:20 };
+  const BASE_SETTINGS = { bank:'', account:'', instagram:'', tiktok:'', defaultDesc:'Visit Kedai', autoNumber:true, backupDays:20, theme:'auto' };
   const DEFAULT_SETTINGS = Object.assign({}, BASE_SETTINGS, window.APP_DEFAULTS || {});
 
   let settings = Object.assign({}, DEFAULT_SETTINGS, store.get('inv-settings', {}));
@@ -551,6 +641,7 @@ details.more .inner{padding:0 14px 14px}
   function renderPreview(){
     lastFits = mountSheet($('#sheetScale'), draft, settings);
     $('#fitHint').hidden = lastFits;
+    $('#noSummary').textContent = (draft.number || '').trim() || 'tidak dicetak';
     fitPreview(); saveDraft();
   }
 
@@ -719,12 +810,15 @@ details.more .inner{padding:0 14px 14px}
     return rec;
   }
   $('#btnSave').addEventListener('click', async () => { if(await save()) toast('Tersimpan di Riwayat'); });
-  $('#btnDelete').addEventListener('click', () => {
-    if(!draft.id) return;
-    if(!confirm('Hapus invoice untuk ' + draft.client + '? Tidak bisa dikembalikan.')) return;
-    invoices = invoices.filter(x => x.id !== draft.id); persist(); renderHistory(); refreshLists();
-    draft = newDraft(); fillForm(); toast('Invoice dihapus');
-  });
+  // Hapus satu invoice (dari form atau dari Riwayat). Nomornya tidak dipakai ulang oleh invoice berikutnya.
+  async function deleteInvoice(rec){
+    const c = await choose('Hapus invoice "' + rec.client + '" (' + fmtRp(rec.total) + ', ' + fmtDate(rec.date) + (rec.number ? ', ' + rec.number : '') + ')? Tidak bisa dikembalikan.', ['Ya, hapus', 'Batal']);
+    if(c !== 0) return;
+    invoices = invoices.filter(x => x.id !== rec.id); persist(); refreshLists(); renderHistory();
+    if(draft && draft.id === rec.id){ draft = newDraft(); fillForm(); }
+    toast('Invoice dihapus');
+  }
+  $('#btnDelete').addEventListener('click', () => { const rec = invoices.find(x => x.id === draft.id); if(rec) deleteInvoice(rec); });
 
   /* ---------- kirim / unduh file ---------- */
   async function deliverFile(blob, name, type){
@@ -828,13 +922,14 @@ details.more .inner{padding:0 14px 14px}
   }
   // Data tabel semua invoice (dipakai untuk Excel dan CSV)
   function tableData(){
-    const head = ['Nomor', 'Tanggal', 'Klien', 'Alamat Klien', 'NPWP Klien', 'No. Invoice Klien', 'Item', 'Total', 'Dibayar', 'Sisa', 'Status'];
+    const head = ['Nomor', 'Tanggal', 'Klien', 'Alamat Klien', 'NPWP Klien', 'No. Invoice Klien', 'Item', 'Total Tagihan', 'Sudah Diterima', 'Sisa Tagihan', 'Status'];
     const label = { paid:'Lunas', partial:'Sebagian', unpaid:'Belum dibayar' };
     const rows = invoices.slice().sort(byDateDesc).map(i => [
       i.number, i.date, i.client, (i.clientAddr || '').replace(/\s*\r?\n\s*/g, ', '), i.clientNpwp, i.clientRef,
       i.items.map(it => it.desc + ' (' + it.rate + ')').join(' + '), i.total, received(i), outstanding(i), label[invStatus(i)]
     ]);
-    return { head, rows };
+    const sumCol = c => rows.reduce((s, r) => s + (Number(r[c]) || 0), 0);
+    return { head, rows, totals:[sumCol(7), sumCol(8), sumCol(9)] };   // jumlah Total Tagihan, Sudah Diterima, Sisa Tagihan
   }
   // CSV: pemisah koma (standar umum), diawali BOM supaya huruf terbaca benar
   function csvCell(v){
@@ -845,7 +940,8 @@ details.more .inner{padding:0 14px 14px}
   async function exportCsv(){
     if(!invoices.length){ toast('Belum ada invoice untuk diekspor'); return; }
     const t = tableData();
-    const csv = '﻿' + [t.head].concat(t.rows).map(r => r.map(csvCell).join(',')).join('\r\n');
+    const totalRow = ['', '', '', '', '', '', 'TOTAL', t.totals[0], t.totals[1], t.totals[2], ''];
+    const csv = '﻿' + [t.head].concat(t.rows, [totalRow]).map(r => r.map(csvCell).join(',')).join('\r\n');
     const r = await deliverFile(new Blob([csv], { type:'text/csv;charset=utf-8' }), 'invoice-endorse-' + todayISO() + '.csv', 'text/csv');
     if(r === 'downloaded') toast('File CSV dibuat');
   }
@@ -870,46 +966,94 @@ details.more .inner{padding:0 14px 14px}
     return new Blob(parts.concat(central, [end]), { type:mime });
   }
   const xe = s => String(s == null ? '' : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  function makeXlsx(head, rows){
+  // Ringkasan per bulan (semua tahun) dan per klien, untuk lembar tambahan di Excel
+  function monthlyTable(){
+    const map = new Map();
+    invoices.forEach(i => {
+      const key = (i.date || '').slice(0, 7); if(!key) return;
+      let m = map.get(key); if(!m){ m = { key, n:0, total:0, got:0 }; map.set(key, m); }
+      m.n++; m.total += i.total; m.got += received(i);
+    });
+    const rows = Array.from(map.values()).sort((a, b) => a.key.localeCompare(b.key)).map(m => {
+      const p = m.key.split('-'); return [Number(p[0]), MONTH_ID[Number(p[1]) - 1], m.n, m.total, m.got, m.total - m.got];
+    });
+    return { head:['Tahun', 'Bulan', 'Jumlah Invoice', 'Total Tagihan', 'Sudah Diterima', 'Sisa Tagihan'], rows };
+  }
+  function clientsTable(){
+    const rows = clientRows(invoices).sort((a, b) => (b.got - a.got) || (b.total - a.total) || a.name.localeCompare(b.name))
+      .map(c => [c.name, c.n, c.total, c.got, c.total - c.got, c.last]);
+    return { head:['Klien', 'Jumlah Invoice', 'Total Tagihan', 'Sudah Diterima', 'Sisa Tagihan', 'Order Terakhir'], rows };
+  }
+  // sheets: [{ name, head, rows, widths, types ('s' teks, 'n' angka, 'd' tanggal, 'y' tahun), totals:{ label, cols } }]
+  function makeXlsx(sheets){
     const MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main', REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
     const XML = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-    const widths = [18, 12, 30, 34, 22, 22, 46, 14, 14, 14, 15];
-    const ref = (r, c) => String.fromCharCode(65 + c) + r;
+    const colL = c => String.fromCharCode(65 + c), ref = (r, c) => colL(c) + r;
     const serial = iso => { const p = String(iso).split('-').map(Number); return p.length === 3 && p[0] ? Math.round((Date.UTC(p[0], p[1] - 1, p[2]) - Date.UTC(1899, 11, 30)) / 86400000) : null; };
     const str = (r, c, v, s) => String(v == null ? '' : v) === '' ? '' : '<c r="' + ref(r, c) + '" t="inlineStr"' + (s ? ' s="' + s + '"' : '') + '><is><t xml:space="preserve">' + xe(v) + '</t></is></c>';
     const num = (r, c, v, s) => '<c r="' + ref(r, c) + '" s="' + s + '"><v>' + v + '</v></c>';
-    let data = '<row r="1">' + head.map((h, c) => str(1, c, h, 1)).join('') + '</row>';
-    rows.forEach((row, i) => {
-      const r = i + 2;
-      data += '<row r="' + r + '">' + row.map((v, c) => {
-        if(c === 1){ const n = serial(v); return n == null ? str(r, c, v) : num(r, c, n, 3); }   // tanggal sungguhan
-        if(c >= 7 && c <= 9) return num(r, c, Number(v) || 0, 2);                                   // angka sungguhan
-        return str(r, c, v);
-      }).join('') + '</row>';
-    });
-    const sheet = XML + '<worksheet xmlns="' + NS + '"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
-      '<cols>' + widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('') + '</cols>' +
-      '<sheetData>' + data + '</sheetData><autoFilter ref="A1:' + ref(rows.length + 1, head.length - 1) + '"/></worksheet>';
-    const styles = XML + '<styleSheet xmlns="' + NS + '"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>' +
-      '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF3330D0"/><bgColor indexed="64"/></patternFill></fill></fills>' +
-      '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
-      '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
-      '<xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="14" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>' +
+    sheets = sheets.filter(sh => sh.rows.length);
+    function sheetXml(sh){
+      const n = sh.rows.length, last = sh.head.length - 1;
+      let data = '<row r="1">' + sh.head.map((h, c) => str(1, c, h, 1)).join('') + '</row>';
+      sh.rows.forEach((row, i) => {
+        const r = i + 2;
+        data += '<row r="' + r + '">' + row.map((v, c) => {
+          const t = sh.types[c];
+          if(t === 'd'){ const s = serial(v); return s == null ? str(r, c, v) : num(r, c, s, 3); }   // tanggal sungguhan
+          if(t === 'n') return num(r, c, Number(v) || 0, 2);                                          // angka sungguhan
+          if(t === 'y') return num(r, c, Number(v) || 0, 6);                                          // tahun (tanpa pemisah ribuan)
+          return str(r, c, v);
+        }).join('') + '</row>';
+      });
+      // Baris TOTAL (setelah satu baris kosong). SUBTOTAL(109,...) hanya menjumlah baris yang terlihat, jadi ikut berubah saat tabel difilter.
+      const tr = n + 3;
+      data += '<row r="' + tr + '">';
+      for(let c = 0; c <= last; c++){
+        if(c === sh.totals.label) data += str(tr, c, 'TOTAL', 4);
+        else if(sh.totals.cols.indexOf(c) >= 0){
+          const L = colL(c), sumv = sh.rows.reduce((s, r) => s + (Number(r[c]) || 0), 0);
+          data += '<c r="' + ref(tr, c) + '" s="5"><f>SUBTOTAL(109,' + L + '2:' + L + (n + 1) + ')</f><v>' + sumv + '</v></c>';
+        } else data += '<c r="' + ref(tr, c) + '" s="4"/>';
+      }
+      data += '</row>';
+      return XML + '<worksheet xmlns="' + NS + '"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+        '<cols>' + sh.widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('') + '</cols>' +
+        '<sheetData>' + data + '</sheetData><autoFilter ref="A1:' + ref(n + 1, last) + '"/></worksheet>';
+    }
+    const styles = XML + '<styleSheet xmlns="' + NS + '"><fonts count="3"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>' +
+      '<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF3330D0"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEDEFF7"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+      '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left/><right/><top style="thin"><color rgb="FF3330D0"/></top><bottom/><diagonal/></border></borders>' +
+      '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+      '<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
+      '<xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="14" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+      '<xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="3" fontId="2" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>' +
+      '<xf numFmtId="1" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>' +
       '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
-    return zipStore([
-      { name:'[Content_Types].xml', text: XML + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
+    const k = sheets.length;
+    const files = [
+      { name:'[Content_Types].xml', text: XML + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+        sheets.map((s, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('') +
+        '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
       { name:'_rels/.rels', text: XML + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + REL + '/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
-      { name:'xl/workbook.xml', text: XML + '<workbook xmlns="' + NS + '" xmlns:r="' + REL + '"><sheets><sheet name="Invoice" sheetId="1" r:id="rId1"/></sheets></workbook>' },
-      { name:'xl/_rels/workbook.xml.rels', text: XML + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + REL + '/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="' + REL + '/styles" Target="styles.xml"/></Relationships>' },
-      { name:'xl/styles.xml', text: styles },
-      { name:'xl/worksheets/sheet1.xml', text: sheet }
-    ], MIME);
+      { name:'xl/workbook.xml', text: XML + '<workbook xmlns="' + NS + '" xmlns:r="' + REL + '"><sheets>' + sheets.map((s, i) => '<sheet name="' + xe(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join('') + '</sheets></workbook>' },
+      { name:'xl/_rels/workbook.xml.rels', text: XML + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+        sheets.map((s, i) => '<Relationship Id="rId' + (i + 1) + '" Type="' + REL + '/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join('') +
+        '<Relationship Id="rId' + (k + 1) + '" Type="' + REL + '/styles" Target="styles.xml"/></Relationships>' },
+      { name:'xl/styles.xml', text: styles }
+    ].concat(sheets.map((s, i) => ({ name:'xl/worksheets/sheet' + (i + 1) + '.xml', text: sheetXml(s) })));
+    return zipStore(files, MIME);
   }
   async function exportXlsx(){
     if(!invoices.length){ toast('Belum ada invoice untuk diekspor'); return; }
-    const t = tableData();
-    const r = await deliverFile(makeXlsx(t.head, t.rows), 'invoice-endorse-' + todayISO() + '.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    const t = tableData(), mo = monthlyTable(), cl = clientsTable();
+    const book = makeXlsx([
+      { name:'Invoice', head:t.head, rows:t.rows, widths:[18, 12, 30, 34, 22, 22, 46, 14, 14, 14, 15], types:['s', 'd', 's', 's', 's', 's', 's', 'n', 'n', 'n', 's'], totals:{ label:6, cols:[7, 8, 9] } },
+      { name:'Rekap Bulanan', head:mo.head, rows:mo.rows, widths:[8, 14, 16, 16, 16, 16], types:['y', 's', 'n', 'n', 'n', 'n'], totals:{ label:1, cols:[2, 3, 4, 5] } },
+      { name:'Per Klien', head:cl.head, rows:cl.rows, widths:[34, 16, 16, 16, 16, 14], types:['s', 'n', 'n', 'n', 'n', 'd'], totals:{ label:0, cols:[1, 2, 3, 4] } }
+    ]);
+    const r = await deliverFile(book, 'invoice-endorse-' + todayISO() + '.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     if(r === 'downloaded') toast('File Excel dibuat');
   }
   $('#btnXlsx').addEventListener('click', exportXlsx);
@@ -924,6 +1068,7 @@ details.more .inner{padding:0 14px 14px}
   function shiftMonth(ym, delta){ const p = ym.split('-').map(Number); const d = new Date(p[0], p[1]-1+delta, 1); return d.getFullYear() + '-' + pad(d.getMonth()+1); }
 
   function renderHistory(){
+    renderReport();   // laporan ikut diperbarui setiap data berubah
     const q = $('#search').value.trim().toLowerCase();
     const inMonth = invoices.filter(i => hMonth === 'all' || (i.date||'').slice(0,7) === hMonth);
     const full = inMonth.filter(i => invStatus(i) === 'paid'), part = inMonth.filter(i => invStatus(i) === 'partial'), open = inMonth.filter(i => invStatus(i) !== 'paid');
@@ -950,15 +1095,68 @@ details.more .inner{padding:0 14px 14px}
       '<div><div class="amt">' + fmtRp(i.total) + '</div>' +
       (invStatus(i) === 'partial' ? '<div class="amt-sub">sisa ' + fmtRp(outstanding(i)) + '</div>' : '') +
       '<div style="text-align:right"><button class="chip ' + ({ paid:'paid', partial:'part', unpaid:'unpaid' })[invStatus(i)] + '" data-toggle="' + esc(i.id) + '" type="button">' + ({ paid:'Lunas', partial:'Sebagian', unpaid:'Belum dibayar' })[invStatus(i)] + '</button></div></div></div>' +
-      '<div class="acts"><button class="mini" data-share="pdf" data-id="' + esc(i.id) + '" type="button">Bagikan PDF</button><button class="mini" data-share="img" data-id="' + esc(i.id) + '" type="button">Bagikan Gambar</button></div></div>'
+      '<div class="acts"><button class="mini" data-share="pdf" data-id="' + esc(i.id) + '" type="button">Bagikan PDF</button><button class="mini" data-share="img" data-id="' + esc(i.id) + '" type="button">Bagikan Gambar</button><button class="mini del" data-del="' + esc(i.id) + '" type="button">Hapus</button></div></div>'
     ).join('');
   }
+  /* ---------- laporan penghasilan ---------- */
+  let rpYear = todayISO().slice(0, 4), rpSort = 'value';
+  const yearOf = i => (i.date || '').slice(0, 4);
+  // Kelompokkan invoice per klien (nama tidak peka huruf besar/kecil)
+  function clientRows(list){
+    const map = new Map();
+    list.forEach(i => {
+      const k = i.client.trim().toLowerCase();
+      let c = map.get(k); if(!c){ c = { name:i.client.trim(), n:0, total:0, got:0, last:'' }; map.set(k, c); }
+      c.n++; c.total += i.total; c.got += received(i);
+      if((i.date || '') > c.last){ c.last = i.date || ''; c.name = i.client.trim(); }
+    });
+    return Array.from(map.values());
+  }
+  function renderReport(){
+    const yr = invoices.filter(i => yearOf(i) === rpYear);
+    const sum = (a, fn) => a.reduce((s, i) => s + fn(i), 0);
+    const total = sum(yr, i => i.total), got = sum(yr, received);
+    const lunas = yr.filter(i => invStatus(i) === 'paid').length;
+    $('#yLabel').textContent = rpYear;
+    $('#rpPaid').textContent = fmtRp(got);
+    $('#rpPaidN').textContent = yr.length ? lunas + ' dari ' + yr.length + ' invoice lunas' : 'Belum ada invoice di tahun ini';
+    $('#rpTotal').textContent = fmtRp(total);
+    $('#rpOpen').textContent = fmtRp(total - got);
+    $('#rpOpenN').textContent = yr.filter(i => invStatus(i) !== 'paid').length + ' invoice';
+    // per bulan: batang terang = total tagihan, batang tebal = yang sudah diterima
+    const months = Array.from({ length:12 }, (_, m) => {
+      const key = rpYear + '-' + pad(m + 1), a = yr.filter(i => (i.date || '').slice(0, 7) === key);
+      return { m, n:a.length, total:sum(a, i => i.total), got:sum(a, received) };
+    });
+    const maxT = Math.max(1, ...months.map(x => x.total));
+    $('#rpMonths').innerHTML = months.map(x =>
+      '<div class="mrow"><div class="mn">' + MONTH_ID[x.m].slice(0, 3) + '</div>' +
+      '<div class="mbar"><div class="mt" style="width:' + (x.total / maxT * 100).toFixed(1) + '%"><i style="width:' + (x.total ? (x.got / x.total * 100).toFixed(1) : 0) + '%"></i></div></div>' +
+      '<div class="mv">' + (x.n ? fmtRp(x.got) + '<small>' + x.n + ' invoice' + (x.total > x.got ? ' · sisa ' + fmtRp(x.total - x.got) : '') + '</small>' : '<small>–</small>') + '</div></div>'
+    ).join('');
+    // per klien
+    const cl = clientRows(yr).sort((a, b) => rpSort === 'order'
+      ? (b.n - a.n) || (b.got - a.got) || a.name.localeCompare(b.name)
+      : (b.got - a.got) || (b.total - a.total) || a.name.localeCompare(b.name));
+    $('#rpClients').innerHTML = cl.length ? cl.map(c =>
+      '<div class="crow"><div class="cl"><div class="cn">' + esc(c.name) + '</div><div class="cm">' + c.n + ' invoice · terakhir ' + esc(fmtDate(c.last)) + '</div></div>' +
+      '<div class="cv">' + fmtRp(c.got) + '<small>' + (c.total > c.got ? 'dari ' + fmtRp(c.total) : 'lunas') + '</small></div></div>'
+    ).join('') : '<div class="empty">Belum ada invoice di tahun ini.</div>';
+    document.querySelectorAll('#rpSort button').forEach(b => b.classList.toggle('on', b.dataset.s === rpSort));
+  }
+  $('#yPrev').addEventListener('click', () => { rpYear = String(+rpYear - 1); renderReport(); });
+  $('#yNext').addEventListener('click', () => { rpYear = String(+rpYear + 1); renderReport(); });
+  $('#rpSort').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; rpSort = b.dataset.s; renderReport(); });
+  $('#btnXlsx2').addEventListener('click', () => exportXlsx());
+
   $('#search').addEventListener('input', renderHistory);
   $('#mPrev').addEventListener('click', () => { hMonth = shiftMonth(hMonth === 'all' ? curMonth() : hMonth, -1); renderHistory(); });
   $('#mNext').addEventListener('click', () => { hMonth = shiftMonth(hMonth === 'all' ? curMonth() : hMonth, 1); renderHistory(); });
   $('#mAll').addEventListener('click', () => { hMonth = hMonth === 'all' ? curMonth() : 'all'; renderHistory(); });
   $('#seg').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; hStatus = b.dataset.s; renderHistory(); });
   $('#list').addEventListener('click', async e => {
+    const dl = e.target.closest('[data-del]');
+    if(dl){ const r = invoices.find(x => x.id === dl.dataset.del); if(r) deleteInvoice(r); return; }
     const sh = e.target.closest('[data-share]');
     if(sh){ const r = invoices.find(x => x.id === sh.dataset.id); if(r) shareRecord(sh.dataset.share === 'pdf' ? 'pdf' : 'img', r, sh); return; }
     const tg = e.target.closest('[data-toggle]');
@@ -1015,7 +1213,20 @@ details.more .inner{padding:0 14px 14px}
 
   /* ---------- pengaturan ---------- */
   const sMap = { '#sBank':'bank', '#sAcc':'account', '#sIg':'instagram', '#sTt':'tiktok', '#sDesc':'defaultDesc' };
+  // Tema: 'auto' mengikuti iPhone, 'light' / 'dark' dipilih manual
+  const darkMq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  function applyTheme(){
+    const t = (settings.theme === 'light' || settings.theme === 'dark') ? settings.theme : 'auto';
+    const root = document.documentElement;
+    if(t === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    const dark = t === 'dark' || (t === 'auto' && !!(darkMq && darkMq.matches));
+    const m = document.querySelector('meta[name=theme-color]'); if(m) m.setAttribute('content', dark ? '#0e1120' : '#3330d0');
+    document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  }
+  $('#themeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; settings.theme = b.dataset.t; store.set('inv-settings', settings); applyTheme(); });
+  if(darkMq && darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
   function loadSettingsForm(){
+    applyTheme();
     Object.keys(sMap).forEach(sel => { $(sel).value = settings[sMap[sel]] || ''; });
     $('#sAuto').checked = !!settings.autoNumber;
     $('#sRemind').value = String(settings.backupDays);
@@ -1044,6 +1255,7 @@ details.more .inner{padding:0 14px 14px}
         const bd = parseInt(settings.backupDays, 10);
         settings.backupDays = [0, 7, 14, 20, 30].indexOf(bd) >= 0 ? bd : 20;
         settings.autoNumber = settings.autoNumber !== false;
+        settings.theme = ['auto', 'light', 'dark'].indexOf(settings.theme) >= 0 ? settings.theme : 'auto';
         ['bank', 'account', 'instagram', 'tiktok', 'defaultDesc'].forEach(k => { settings[k] = String(settings[k] == null ? '' : settings[k]); });
         if(data.counters && typeof data.counters === 'object'){
           Object.keys(data.counters).forEach(k => { const n = parseInt(data.counters[k], 10); if(/^INV-\d{6}-$/.test(k) && n > (meta.counters[k] || 0)) meta.counters[k] = n; });
@@ -1058,7 +1270,7 @@ details.more .inner{padding:0 14px 14px}
   });
 
   /* ---------- tab ---------- */
-  const TITLES = { history:['Riwayat','Rekap per bulan dan semua invoice.'], settings:['Pengaturan','Info bank, nomor invoice, dan cadangan.'] };
+  const TITLES = { history:['Riwayat','Rekap per bulan dan semua invoice.'], report:['Laporan','Penghasilan per tahun, bulan, dan klien.'], settings:['Pengaturan','Info bank, nomor invoice, dan cadangan.'] };
   function showTab(name){
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'view-' + name));
     document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
