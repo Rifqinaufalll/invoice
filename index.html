@@ -314,7 +314,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 
 <script>
 (function(){
-  const APP_VERSION = '2.2'; // samakan dengan CACHE di sw.js
+  const APP_VERSION = '2.3'; // samakan dengan CACHE di sw.js
   const $ = s => document.querySelector(s);
   const store = {
     get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
@@ -365,7 +365,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   function fmtDate(iso){ const p = (iso||'').split('-'); if(p.length !== 3) return ''; return parseInt(p[2],10) + ' ' + MONTHS[parseInt(p[1],10)-1] + ' ' + p[0]; }
   function fmtNum(n){ return String(Math.round(n||0)).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
   function fmtRp(n){ return 'Rp ' + fmtNum(n); }
-  function parseNum(s){ return parseInt(String(s||'').replace(/\D/g,''),10) || 0; }
+  function parseNum(s){ return parseInt(String(s||'').replace(/\D/g,'').slice(0,12),10) || 0; }
   let toastT;
   function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 2600); }
   function persist(){ if(!store.set('inv-list', invoices)) toast('Gagal menyimpan: penyimpanan browser tidak tersedia'); }
@@ -403,6 +403,24 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   function saveDraft(){ if(draft) store.set('inv-draft', draft); }
   // Pulihkan draf yang belum disimpan (misalnya aplikasi tertutup di latar belakang). Draf yang sama persis dengan
   // invoice tersimpan tidak dipulihkan, supaya aplikasi selalu dibuka dengan form kosong dan tidak menimpa invoice lama.
+  // Apakah isian di form berbeda dari yang tersimpan (atau belum pernah disimpan)?
+  function isDirty(){
+    if(!draft) return false;
+    if(draft.id){
+      const s = invoices.find(x => x.id === draft.id);
+      if(!s) return true;
+      return s.client !== draft.client.trim() || s.date !== draft.date || (s.number || '') !== (draft.number || '').trim() || JSON.stringify(s.items) !== JSON.stringify(cleanItems());
+    }
+    return !!draft.client.trim() || draft.items.length > 1 || draft.items.some(it => it.rate > 0);
+  }
+  // Sebelum form diganti isinya: kalau ada isian yang belum disimpan, tanya dulu.
+  async function confirmDiscard(){
+    if(!isDirty()) return true;
+    const c = await choose('Ada isian invoice yang belum disimpan. Apa yang ingin kamu lakukan?', ['Simpan dulu, lalu lanjut', 'Buang dan lanjut', 'Batal']);
+    if(c === 2) return false;
+    if(c === 0) return !!(await save());
+    return true;
+  }
   function restoreDraft(){
     const s = store.get('inv-draft', null);
     if(!s || typeof s !== 'object') return false;
@@ -411,7 +429,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     let id = s.id ? String(s.id) : null;
     const saved = id ? invoices.find(x => x.id === id) : null;
     if(id && !saved) id = null;
-    const d = { id, client:String(s.client || ''), date:/^\d{4}-\d{2}-\d{2}$/.test(s.date) ? s.date : todayISO(), number:s.number ? String(s.number) : '', numAuto:!!s.numAuto && !id, items, paid:!!s.paid };
+    const d = { id, client:String(s.client || ''), date:/^\d{4}-\d{2}-\d{2}$/.test(s.date) ? s.date : todayISO(), dateTouched:!!s.dateTouched, number:s.number ? String(s.number) : '', numAuto:!!s.numAuto && !id, items, paid:!!s.paid };
     if(saved && saved.client === d.client && saved.date === d.date && saved.number === d.number && JSON.stringify(saved.items) === JSON.stringify(d.items)) return false;
     draft = d; return true;
   }
@@ -460,7 +478,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   /* ---------- form ---------- */
   function newDraft(){
     const date = todayISO();
-    return { id:null, client:'', date, number:freshNumber(date), numAuto:true, items:[{ desc:settings.defaultDesc || '', rate:0 }], paid:false };
+    return { id:null, client:'', date, dateTouched:false, number:freshNumber(date), numAuto:true, items:[{ desc:settings.defaultDesc || '', rate:0 }], paid:false };
   }
   function renderItems(){
     const box = $('#items');
@@ -518,14 +536,31 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     if(draft.numAuto && !draft.id && settings.autoNumber){ draft.number = nextNumber(draft.date); $('#invNo').value = draft.number; }
     renderPreview();
   }
-  $('#date').addEventListener('input', e => setDate(e.target.value));
-  $('#btnToday').addEventListener('click', () => setDate(todayISO()));
+  $('#date').addEventListener('input', e => { draft.dateTouched = true; setDate(e.target.value); });
+  $('#btnToday').addEventListener('click', () => { draft.dateTouched = false; setDate(todayISO()); });
+  // Aplikasi dibuka kembali setelah ganti hari: form yang masih kosong dan tanggalnya belum diubah sendiri ikut hari ini.
+  function refreshIfStale(){
+    if(draft && !draft.id && !draft.dateTouched && !isDirty() && draft.date !== todayISO()) setDate(todayISO());
+  }
+  document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') refreshIfStale(); });
+  window.addEventListener('pageshow', refreshIfStale);
   $('#invNo').addEventListener('input', e => { draft.number = e.target.value.trim(); draft.numAuto = false; renderPreview(); });
   $('#items').addEventListener('input', e => {
     const row = e.target.closest('.it'); if(!row) return;
     const it = draft.items[+row.dataset.i]; if(!it) return;
     if(e.target.classList.contains('it-desc')) it.desc = e.target.value;
-    else if(e.target.classList.contains('it-rate')){ const n = parseNum(e.target.value); it.rate = n; e.target.value = n ? fmtNum(n) : ''; updateTotal(); }
+    else if(e.target.classList.contains('it-rate')){
+      const el = e.target, raw = el.value;
+      const pos = el.selectionStart == null ? raw.length : el.selectionStart;
+      const digitsBefore = raw.slice(0, pos).replace(/\D/g, '').length;   // berapa digit di kiri kursor
+      const n = parseNum(raw); it.rate = n; el.value = n ? fmtNum(n) : '';
+      if(document.activeElement === el){   // kembalikan kursor ke sebelah digit yang sama, bukan ke ujung
+        const v = el.value; let np = 0, seen = 0;
+        if(digitsBefore > 0){ for(np = 0; np < v.length; np++){ if(/\d/.test(v[np]) && ++seen === digitsBefore){ np++; break; } } }
+        try{ el.setSelectionRange(np, np); }catch(err){}
+      }
+      updateTotal();
+    }
     renderPreview();
   });
   $('#items').addEventListener('click', e => {
@@ -538,10 +573,12 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     renderItems(); renderPreview();
     const rates = document.querySelectorAll('.it-rate'); rates[rates.length - 1].focus();
   });
-  $('#btnNew').addEventListener('click', () => { draft = newDraft(); fillForm(); window.scrollTo({top:0,behavior:'smooth'}); });
-  $('#btnDup').addEventListener('click', () => {
+  $('#btnNew').addEventListener('click', async () => { if(!(await confirmDiscard())) return; draft = newDraft(); fillForm(); window.scrollTo({top:0,behavior:'smooth'}); });
+  $('#btnDup').addEventListener('click', async () => {
+    if(!(await confirmDiscard())) return;
+    const src = invoices.find(x => x.id === draft.id) || draft;   // yang dipakai: versi tersimpan, bukan perubahan yang dibuang
     const date = todayISO();
-    draft = { id:null, client:draft.client, date, number:freshNumber(date), numAuto:true, items:copyItems(draft.items), paid:false };
+    draft = { id:null, client:src.client, date, dateTouched:false, number:freshNumber(date), numAuto:true, items:copyItems(src.items), paid:false };
     fillForm(); window.scrollTo({top:0,behavior:'smooth'});
     const h = $('#clientHint'); h.textContent = 'Duplikat siap. Cek tanggal dan rate, lalu simpan.'; h.hidden = false;
   });
@@ -652,7 +689,24 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     const { canvas } = await renderCanvas(rec);
     return new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('img')), 'image/png'));
   }
+  // Item yang ada deskripsinya tapi rate-nya kosong (Rp 0) akan ikut tercetak ke klien: tanya dulu.
+  async function resolveZeroItems(){
+    const zero = draft.items.filter(it => it.desc.trim() && !it.rate);
+    if(!zero.length) return true;
+    const names = zero.map(it => '"' + it.desc.trim() + '"').join(', ');
+    const c = await choose('Item ' + names + ' belum diisi rate (Rp 0) dan akan ikut tercetak di invoice. Apa yang ingin kamu lakukan?',
+      ['Hapus item itu', 'Tetap cetak dengan Rp 0', 'Batal']);
+    if(c === 2) return false;
+    if(c === 0){
+      draft.items = draft.items.filter(it => !(it.desc.trim() && !it.rate));
+      if(!draft.items.length) draft.items = [{ desc:'', rate:0 }];
+      renderItems(); renderPreview();
+    }
+    return true;
+  }
   async function exportFile(kind){
+    if(!validate()) return;
+    if(!(await resolveZeroItems())) return;
     const rec = await save(); if(!rec) return;
     if(!lastFits){ toast('Item terlalu banyak untuk satu halaman. Kurangi item atau pecah jadi dua invoice.'); return; }
     const btn = $(kind === 'pdf' ? '#btnPdf' : '#btnImg'); btn.disabled = true; const old = btn.textContent; btn.textContent = 'Membuat…';
@@ -709,7 +763,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   $('#mNext').addEventListener('click', () => { hMonth = shiftMonth(hMonth === 'all' ? curMonth() : hMonth, 1); renderHistory(); });
   $('#mAll').addEventListener('click', () => { hMonth = hMonth === 'all' ? curMonth() : 'all'; renderHistory(); });
   $('#seg').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; hStatus = b.dataset.s; renderHistory(); });
-  $('#list').addEventListener('click', e => {
+  $('#list').addEventListener('click', async e => {
     const tg = e.target.closest('[data-toggle]');
     if(tg){
       const rec = invoices.find(x => x.id === tg.dataset.toggle);
@@ -725,7 +779,8 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     }
     const it = e.target.closest('.item'); if(!it) return;
     const rec = invoices.find(x => x.id === it.dataset.id); if(!rec) return;
-    draft = Object.assign({}, rec, { numAuto:false, items: copyItems(rec.items) });
+    if(!(await confirmDiscard())) return;
+    draft = Object.assign({}, rec, { numAuto:false, dateTouched:true, items: copyItems(rec.items) });
     fillForm(); showTab('create');
   });
 
