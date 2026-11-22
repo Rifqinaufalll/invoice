@@ -1,7 +1,7 @@
 // Service worker: menyimpan seluruh aplikasi di perangkat supaya bisa dibuka tanpa internet.
 // Naikkan angka versi di bawah setiap kali file aplikasi diubah, supaya iPhone mengambil yang baru.
 // Angkanya harus sama dengan APP_VERSION di index.html. Halaman juga membaca angka ini untuk tahu versi terbaru di server.
-const VERSION = '2.5';
+const VERSION = '2.6';
 const CACHE = 'invoice-' + VERSION;
 const ASSETS = [
   './',

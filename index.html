@@ -331,8 +331,11 @@ details.more .inner{padding:0 14px 14px}
         <button class="btn line" id="btnImport" type="button">Pulihkan</button>
       </div>
       <input type="file" id="fileImport" accept="application/json,.json" hidden>
-      <div class="actions" style="margin:0 0 6px"><button class="btn line" id="btnCsv" type="button">Ekspor ke Excel (CSV)</button></div>
-      <p class="hint" style="margin:0 0 12px">Tabel semua invoice untuk pembukuan. Ini bukan cadangan: tidak bisa dipulihkan ke aplikasi.</p>
+      <div class="actions" style="margin:0 0 6px">
+        <button class="btn line" id="btnXlsx" type="button">Ekspor Excel (.xlsx)</button>
+        <button class="btn line" id="btnCsv" type="button">CSV</button>
+      </div>
+      <p class="hint" style="margin:0 0 12px">Tabel semua invoice untuk pembukuan. Excel (.xlsx) terbuka rapi sebagai tabel di Excel, Numbers, dan Google Sheets; CSV berupa teks biasa. Keduanya bukan cadangan: tidak bisa dipulihkan ke aplikasi.</p>
       <p class="hint" id="lastBackup" style="margin:0 0 12px"></p>
       <label for="sRemind">Ingatkan saya untuk cadangan</label>
       <select id="sRemind">
@@ -370,7 +373,7 @@ details.more .inner{padding:0 14px 14px}
 
 <script>
 (function(){
-  const APP_VERSION = '2.5'; // samakan dengan VERSION di sw.js
+  const APP_VERSION = '2.6'; // samakan dengan VERSION di sw.js
   const $ = s => document.querySelector(s);
   const store = {
     get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
@@ -823,25 +826,93 @@ details.more .inner{padding:0 14px 14px}
       toast(e && e.message === 'fit' ? 'Item terlalu banyak untuk satu halaman.' : 'Gagal membuat ' + (kind === 'pdf' ? 'PDF' : 'gambar'));
     }finally{ if(btn){ btn.disabled = false; btn.textContent = old; } }
   }
-  // Ekspor semua invoice jadi tabel CSV (pemisah titik koma, supaya terbuka rapi di Excel berbahasa Indonesia)
-  function csvCell(v){
-    let s = String(v == null ? '' : v);
-    if(/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // cegah sel dibaca sebagai rumus
-    return /[;"\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-  }
-  async function exportCsv(){
-    if(!invoices.length){ toast('Belum ada invoice untuk diekspor'); return; }
+  // Data tabel semua invoice (dipakai untuk Excel dan CSV)
+  function tableData(){
     const head = ['Nomor', 'Tanggal', 'Klien', 'Alamat Klien', 'NPWP Klien', 'No. Invoice Klien', 'Item', 'Total', 'Dibayar', 'Sisa', 'Status'];
     const label = { paid:'Lunas', partial:'Sebagian', unpaid:'Belum dibayar' };
     const rows = invoices.slice().sort(byDateDesc).map(i => [
       i.number, i.date, i.client, (i.clientAddr || '').replace(/\s*\r?\n\s*/g, ', '), i.clientNpwp, i.clientRef,
       i.items.map(it => it.desc + ' (' + it.rate + ')').join(' + '), i.total, received(i), outstanding(i), label[invStatus(i)]
     ]);
-    const csv = '﻿' + [head].concat(rows).map(r => r.map(csvCell).join(';')).join('\r\n');
+    return { head, rows };
+  }
+  // CSV: pemisah koma (standar umum), diawali BOM supaya huruf terbaca benar
+  function csvCell(v){
+    let s = String(v == null ? '' : v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+    if(/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // cegah sel dibaca sebagai rumus
+    return /[,"\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  async function exportCsv(){
+    if(!invoices.length){ toast('Belum ada invoice untuk diekspor'); return; }
+    const t = tableData();
+    const csv = '﻿' + [t.head].concat(t.rows).map(r => r.map(csvCell).join(',')).join('\r\n');
     const r = await deliverFile(new Blob([csv], { type:'text/csv;charset=utf-8' }), 'invoice-endorse-' + todayISO() + '.csv', 'text/csv');
     if(r === 'downloaded') toast('File CSV dibuat');
   }
   $('#btnCsv').addEventListener('click', exportCsv);
+
+  /* ----- File Excel (.xlsx) tanpa pustaka tambahan: kumpulan XML dalam arsip zip tanpa kompresi ----- */
+  const CRC_T = (() => { const t = new Uint32Array(256); for(let n = 0; n < 256; n++){ let c = n; for(let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[n] = c >>> 0; } return t; })();
+  function crc32(u8){ let c = 0xFFFFFFFF; for(let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+  function zipStore(files, mime){
+    const enc = new TextEncoder(), parts = [], central = []; let offset = 0;
+    const w16 = n => [n & 255, (n >>> 8) & 255], w32 = n => [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, (n >>> 24) & 255];
+    const date = 0x5D76, time = 0;   // tanggal tetap di dalam arsip
+    files.forEach(f => {
+      const name = enc.encode(f.name), data = enc.encode(f.text), crc = crc32(data), size = data.length;
+      const local = new Uint8Array([0x50, 0x4b, 0x03, 0x04, ...w16(20), ...w16(0x0800), ...w16(0), ...w16(time), ...w16(date), ...w32(crc), ...w32(size), ...w32(size), ...w16(name.length), ...w16(0)]);
+      parts.push(local, name, data);
+      central.push(new Uint8Array([0x50, 0x4b, 0x01, 0x02, ...w16(20), ...w16(20), ...w16(0x0800), ...w16(0), ...w16(time), ...w16(date), ...w32(crc), ...w32(size), ...w32(size), ...w16(name.length), ...w16(0), ...w16(0), ...w16(0), ...w16(0), ...w32(0), ...w32(offset)]), name);
+      offset += local.length + name.length + size;
+    });
+    const cdSize = central.reduce((a, p) => a + p.length, 0);
+    const end = new Uint8Array([0x50, 0x4b, 0x05, 0x06, ...w16(0), ...w16(0), ...w16(files.length), ...w16(files.length), ...w32(cdSize), ...w32(offset), ...w16(0)]);
+    return new Blob(parts.concat(central, [end]), { type:mime });
+  }
+  const xe = s => String(s == null ? '' : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  function makeXlsx(head, rows){
+    const MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main', REL = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    const XML = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+    const widths = [18, 12, 30, 34, 22, 22, 46, 14, 14, 14, 15];
+    const ref = (r, c) => String.fromCharCode(65 + c) + r;
+    const serial = iso => { const p = String(iso).split('-').map(Number); return p.length === 3 && p[0] ? Math.round((Date.UTC(p[0], p[1] - 1, p[2]) - Date.UTC(1899, 11, 30)) / 86400000) : null; };
+    const str = (r, c, v, s) => String(v == null ? '' : v) === '' ? '' : '<c r="' + ref(r, c) + '" t="inlineStr"' + (s ? ' s="' + s + '"' : '') + '><is><t xml:space="preserve">' + xe(v) + '</t></is></c>';
+    const num = (r, c, v, s) => '<c r="' + ref(r, c) + '" s="' + s + '"><v>' + v + '</v></c>';
+    let data = '<row r="1">' + head.map((h, c) => str(1, c, h, 1)).join('') + '</row>';
+    rows.forEach((row, i) => {
+      const r = i + 2;
+      data += '<row r="' + r + '">' + row.map((v, c) => {
+        if(c === 1){ const n = serial(v); return n == null ? str(r, c, v) : num(r, c, n, 3); }   // tanggal sungguhan
+        if(c >= 7 && c <= 9) return num(r, c, Number(v) || 0, 2);                                   // angka sungguhan
+        return str(r, c, v);
+      }).join('') + '</row>';
+    });
+    const sheet = XML + '<worksheet xmlns="' + NS + '"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+      '<cols>' + widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('') + '</cols>' +
+      '<sheetData>' + data + '</sheetData><autoFilter ref="A1:' + ref(rows.length + 1, head.length - 1) + '"/></worksheet>';
+    const styles = XML + '<styleSheet xmlns="' + NS + '"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>' +
+      '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF3330D0"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+      '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+      '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
+      '<xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="14" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>' +
+      '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    return zipStore([
+      { name:'[Content_Types].xml', text: XML + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
+      { name:'_rels/.rels', text: XML + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + REL + '/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
+      { name:'xl/workbook.xml', text: XML + '<workbook xmlns="' + NS + '" xmlns:r="' + REL + '"><sheets><sheet name="Invoice" sheetId="1" r:id="rId1"/></sheets></workbook>' },
+      { name:'xl/_rels/workbook.xml.rels', text: XML + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + REL + '/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="' + REL + '/styles" Target="styles.xml"/></Relationships>' },
+      { name:'xl/styles.xml', text: styles },
+      { name:'xl/worksheets/sheet1.xml', text: sheet }
+    ], MIME);
+  }
+  async function exportXlsx(){
+    if(!invoices.length){ toast('Belum ada invoice untuk diekspor'); return; }
+    const t = tableData();
+    const r = await deliverFile(makeXlsx(t.head, t.rows), 'invoice-endorse-' + todayISO() + '.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    if(r === 'downloaded') toast('File Excel dibuat');
+  }
+  $('#btnXlsx').addEventListener('click', exportXlsx);
   $('#btnPdf').addEventListener('click', () => exportFile('pdf'));
   $('#btnImg').addEventListener('click', () => exportFile('img'));
   window.__makePdf = makePdf; window.__makeImage = makeImage; // untuk pengujian
