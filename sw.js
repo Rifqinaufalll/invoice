@@ -1,6 +1,7 @@
 // Service worker: menyimpan seluruh aplikasi di perangkat supaya bisa dibuka tanpa internet.
 // Naikkan angka versi di bawah setiap kali file aplikasi diubah, supaya iPhone mengambil yang baru.
-const CACHE = 'invoice-v2';
+// Angkanya harus sama dengan APP_VERSION di index.html.
+const CACHE = 'invoice-2.1';
 const ASSETS = [
   './',
   'index.html',
@@ -15,7 +16,8 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  // cache:'reload' memastikan yang disimpan adalah file terbaru dari server, bukan salinan lama di browser.
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {

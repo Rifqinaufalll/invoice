@@ -75,6 +75,9 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .banner .acts{display:flex;gap:8px}
 .banner .btn{flex:1;background:#fff;color:#6b4100}
 .banner .btn.main{background:#6b4100;color:#fff}
+.banner.info{background:#e8e9fb;color:#25239a}
+.banner.info .btn{color:#25239a}
+.banner.info .btn.main{background:var(--brand);color:#fff}
 
 /* tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:10}
@@ -154,6 +157,14 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     <div class="acts">
       <button class="btn main sm" id="bkNow" type="button">Cadangkan sekarang</button>
       <button class="btn sm" id="bkLater" type="button">Nanti</button>
+    </div>
+  </div>
+
+  <div class="banner info" id="updateBanner" hidden>
+    <p>Versi baru tersedia. Simpan dulu invoice yang sedang kamu buat, lalu muat ulang.</p>
+    <div class="acts">
+      <button class="btn main sm" id="upReload" type="button">Muat ulang</button>
+      <button class="btn sm" id="upLater" type="button">Nanti</button>
     </div>
   </div>
 
@@ -256,6 +267,11 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       </select>
       <p class="hint">Pengingat muncul di dalam aplikasi saat kamu membukanya.</p>
     </div>
+    <div class="card">
+      <h2>Tentang aplikasi</h2>
+      <p class="hint" style="margin:0 0 12px">Versi <b id="appVersion"></b>. Aplikasi memeriksa pembaruan setiap kali dibuka.</p>
+      <button class="btn line" id="btnCheck" type="button">Periksa pembaruan</button>
+    </div>
   </section>
 </div>
 
@@ -271,6 +287,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 
 <script>
 (function(){
+  const APP_VERSION = '2.1'; // samakan dengan CACHE di sw.js
   const $ = s => document.querySelector(s);
   const store = {
     get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
@@ -642,9 +659,28 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 
   // Minta browser menjaga data agar tidak dibersihkan otomatis, dan aktifkan mode offline
   try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+  let swReg = null, updateReady = false;
+  const hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
+  function showUpdate(){ updateReady = true; $('#updateBanner').hidden = false; }
   if('serviceWorker' in navigator && location.protocol.indexOf('http') === 0){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
+    // Versi baru mengambil alih setelah terpasang; kalau sebelumnya sudah ada versi lain, tawarkan muat ulang.
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if(hadController) showUpdate(); });
+    navigator.serviceWorker.register('sw.js', { updateViaCache:'none' }).then(reg => {
+      swReg = reg; reg.update().catch(function(){});
+      // iPhone jarang memeriksa sendiri, jadi periksa setiap aplikasi dibuka kembali
+      document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') reg.update().catch(function(){}); });
+    }).catch(function(){});
   }
+  $('#appVersion').textContent = APP_VERSION;
+  $('#upReload').addEventListener('click', () => location.reload());
+  $('#upLater').addEventListener('click', () => { $('#updateBanner').hidden = true; });
+  $('#btnCheck').addEventListener('click', async () => {
+    if(!swReg){ toast('Pemeriksaan pembaruan hanya jalan di aplikasi yang sudah dipasang'); return; }
+    const b = $('#btnCheck'); b.disabled = true;
+    try{ await swReg.update(); await new Promise(r => setTimeout(r, 1800)); toast(updateReady ? 'Versi baru siap. Tekan Muat ulang' : 'Sudah versi terbaru (' + APP_VERSION + ')'); }
+    catch(e){ toast('Gagal memeriksa. Cek koneksi internet.'); }
+    b.disabled = false;
+  });
 })();
 </script>
 </body>
