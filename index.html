@@ -78,6 +78,12 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .banner.info{background:#e8e9fb;color:#25239a}
 .banner.info .btn{color:#25239a}
 .banner.info .btn.main{background:var(--brand);color:#fff}
+.hint.warn{color:var(--danger);font-weight:500}
+.modal{position:fixed;inset:0;background:rgba(15,20,40,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:40}
+.modal[hidden]{display:none}
+.modal-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:380px}
+.modal-box p{margin:0 0 14px;font-size:15px;line-height:1.5}
+.modal-acts{display:flex;flex-direction:column;gap:8px}
 
 /* tabs */
 .tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:10}
@@ -143,6 +149,25 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .sh-foot{position:absolute;left:56px;right:70px;bottom:46px;display:flex;justify-content:space-between;font-size:16px}
 .sh-foot .lbl{color:#64809a;margin-right:8px}
 .sh-foot b{font-weight:700}
+/* tata letak makin rapat kalau item banyak (dipilih otomatis oleh aplikasi) */
+.sheet.t1 .sh-head{height:140px}.sheet.t1 .sh-head h2{font-size:42px}
+.sheet.t1 .sh-client{padding-top:24px}.sheet.t1 .sh-name{min-height:30px;margin-top:8px}
+.sheet.t1 .sh-date{margin-top:30px}
+.sheet.t1 .sh-body{min-height:0;padding-top:24px}
+.sheet.t1 .sh-row{margin-bottom:10px;font-size:15px}
+.sheet.t1 .sh-bank-bar{margin-top:40px}.sheet.t1 .sh-bank{padding-top:22px}
+.sheet.t2 .sh-head{height:104px}.sheet.t2 .sh-head h2{font-size:36px}
+.sheet.t2 .sh-client{padding-top:18px}.sheet.t2 .sh-h{font-size:22px}.sheet.t2 .sh-name{min-height:24px;margin-top:6px;font-size:17px}
+.sheet.t2 .sh-date{margin-top:20px}
+.sheet.t2 .sh-body{min-height:0;padding-top:16px}
+.sheet.t2 .sh-row{margin-bottom:6px;font-size:14px}
+.sheet.t2 .sh-bank-bar{margin-top:24px}.sheet.t2 .sh-bank{padding-top:16px}
+.sheet.t3 .sh-head{height:80px}.sheet.t3 .sh-head h2{font-size:30px}
+.sheet.t3 .sh-client{padding-top:12px}.sheet.t3 .sh-h{font-size:19px}.sheet.t3 .sh-name{min-height:20px;margin-top:4px;font-size:15px}
+.sheet.t3 .sh-date{margin-top:12px}
+.sheet.t3 .sh-body{min-height:0;padding-top:10px}
+.sheet.t3 .sh-row{margin-bottom:3px;font-size:13px}
+.sheet.t3 .sh-bank-bar{margin-top:14px}.sheet.t3 .sh-bank{padding-top:12px}
 </style>
 </head>
 <body>
@@ -193,6 +218,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       <button class="btn ghost sm" id="btnAddItem" type="button">+ Tambah item</button>
       <div class="totalbox"><span>Total</span><strong id="totalView">Rp 0</strong></div>
       <p class="hint">Total otomatis dijumlahkan dari semua item.</p>
+      <p class="hint warn" id="fitHint" hidden>Item terlalu banyak untuk satu halaman invoice. Kurangi item atau pecah menjadi dua invoice.</p>
     </div>
 
     <div class="actions">
@@ -283,11 +309,12 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   <button data-tab="settings" type="button">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Pengaturan</button>
 </nav>
+<div class="modal" id="modal" hidden><div class="modal-box" role="dialog" aria-modal="true"><p id="modalText"></p><div class="modal-acts" id="modalActs"></div></div></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
 (function(){
-  const APP_VERSION = '2.1'; // samakan dengan CACHE di sw.js
+  const APP_VERSION = '2.2'; // samakan dengan CACHE di sw.js
   const $ = s => document.querySelector(s);
   const store = {
     get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
@@ -300,17 +327,35 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 
   let settings = Object.assign({}, DEFAULT_SETTINGS, store.get('inv-settings', {}));
   let invoices = store.get('inv-list', []);
+  if(!Array.isArray(invoices)) invoices = [];
   let meta = Object.assign({ lastBackup:0, snoozeUntil:0 }, store.get('inv-meta', {}));
+  if(!meta.counters || typeof meta.counters !== 'object') meta.counters = {};
   let draft;
   let hMonth, hStatus = 'all';
 
   function sumItems(items){ return (items || []).reduce((a, it) => a + (it.rate || 0), 0); }
-  function normalize(i){
-    if(!Array.isArray(i.items)) i.items = [{ desc:i.desc || '', rate:i.rate || 0 }];
-    i.total = sumItems(i.items);
-    return i;
+  function cleanRate(v){ const n = Math.round(Number(v)); return isFinite(n) && n > 0 ? n : 0; }
+  function sanitizeItems(arr, fallback){
+    let items = Array.isArray(arr) ? arr.filter(it => it && typeof it === 'object').map(it => ({ desc:String(it.desc == null ? '' : it.desc), rate:cleanRate(it.rate) })) : [];
+    if(!items.length) items = fallback || [{ desc:'', rate:0 }];
+    return items;
   }
-  invoices = invoices.map(normalize);
+  // Rapikan satu catatan invoice; data yang rusak diperbaiki atau dibuang, bukan membuat aplikasi macet.
+  function normalize(i){
+    if(!i || typeof i !== 'object') return null;
+    const n = {
+      id: String(i.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 6))),
+      client: String(i.client == null ? '' : i.client),
+      date: /^\d{4}-\d{2}-\d{2}$/.test(i.date) ? i.date : todayISO(),
+      number: i.number ? String(i.number) : '',
+      items: sanitizeItems(i.items, [{ desc:String(i.desc || ''), rate:cleanRate(i.rate) }]),
+      paid: !!i.paid,
+      createdAt: Number(i.createdAt) || 0
+    };
+    n.total = sumItems(n.items);
+    if(!n.client.trim() && n.total === 0) return null;   // catatan kosong/rusak, dibuang
+    return n;
+  }
 
   /* ---------- helpers ---------- */
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -326,14 +371,50 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   function persist(){ if(!store.set('inv-list', invoices)) toast('Gagal menyimpan: penyimpanan browser tidak tersedia'); }
   function saveMeta(){ store.set('inv-meta', meta); }
   const byDateDesc = (a,b) => (b.date||'').localeCompare(a.date||'') || (b.createdAt||0) - (a.createdAt||0);
+  invoices = invoices.map(normalize).filter(Boolean);
 
   function nextNumber(iso){
     const prefix = 'INV-' + (iso || todayISO()).slice(0,7).replace('-','') + '-';
-    let max = 0;
+    let max = meta.counters[prefix] || 0;   // nomor yang pernah dipakai tidak dipakai lagi, walau invoicenya sudah dihapus
     invoices.forEach(i => { if(i.number && i.number.indexOf(prefix) === 0){ const n = parseInt(i.number.slice(prefix.length),10); if(n > max) max = n; } });
     return prefix + String(max + 1).padStart(3,'0');
   }
   const freshNumber = iso => settings.autoNumber ? nextNumber(iso) : '';
+  function noteNumber(num){
+    const m = /^(INV-\d{6}-)(\d+)$/.exec(num || ''); if(!m) return;
+    const n = parseInt(m[2], 10);
+    if(n > (meta.counters[m[1]] || 0)){ meta.counters[m[1]] = n; saveMeta(); }
+  }
+
+  /* ---------- dialog pilihan ---------- */
+  function choose(text, labels){
+    return new Promise(resolve => {
+      const m = $('#modal'), acts = $('#modalActs');
+      $('#modalText').textContent = text;
+      acts.innerHTML = labels.map((l, i) => '<button type="button" class="btn ' + (i === 0 ? '' : (i === labels.length - 1 ? 'line' : 'ghost')) + '" data-i="' + i + '">' + esc(l) + '</button>').join('');
+      m.hidden = false;
+      const done = i => { m.hidden = true; acts.onclick = null; m.onclick = null; resolve(i); };
+      acts.onclick = e => { const b = e.target.closest('button'); if(b) done(+b.dataset.i); };
+      m.onclick = e => { if(e.target === m) done(labels.length - 1); };
+    });
+  }
+
+  /* ---------- draf otomatis ---------- */
+  function saveDraft(){ if(draft) store.set('inv-draft', draft); }
+  // Pulihkan draf yang belum disimpan (misalnya aplikasi tertutup di latar belakang). Draf yang sama persis dengan
+  // invoice tersimpan tidak dipulihkan, supaya aplikasi selalu dibuka dengan form kosong dan tidak menimpa invoice lama.
+  function restoreDraft(){
+    const s = store.get('inv-draft', null);
+    if(!s || typeof s !== 'object') return false;
+    const items = sanitizeItems(s.items);
+    if(!String(s.client || '').trim() && !sumItems(items)) return false;
+    let id = s.id ? String(s.id) : null;
+    const saved = id ? invoices.find(x => x.id === id) : null;
+    if(id && !saved) id = null;
+    const d = { id, client:String(s.client || ''), date:/^\d{4}-\d{2}-\d{2}$/.test(s.date) ? s.date : todayISO(), number:s.number ? String(s.number) : '', numAuto:!!s.numAuto && !id, items, paid:!!s.paid };
+    if(saved && saved.client === d.client && saved.date === d.date && saved.number === d.number && JSON.stringify(saved.items) === JSON.stringify(d.items)) return false;
+    draft = d; return true;
+  }
 
   /* ---------- lembar invoice ---------- */
   function sheetHTML(d, s){
@@ -356,7 +437,25 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     $('#sheetScale').style.transform = 'scale(' + k + ')';
     wrap.style.height = (1123 * k) + 'px';
   }
-  function renderPreview(){ $('#sheetScale').innerHTML = sheetHTML(draft, settings); fitPreview(); }
+  // Cek apakah isi invoice muat satu halaman; kalau tidak, rapatkan tata letak bertahap (t1..t3).
+  function sheetFits(sheet){
+    const bank = sheet.querySelector('.sh-bank'), foot = sheet.querySelector('.sh-foot');
+    return bank.offsetTop + bank.offsetHeight <= foot.offsetTop - 8;
+  }
+  function mountSheet(box, d, s){
+    box.innerHTML = sheetHTML(d, s);
+    const sheet = box.firstElementChild;
+    if(!sheet.offsetHeight) return true;   // sedang tersembunyi (tab lain), tidak bisa diukur
+    let level = 0;
+    while(!sheetFits(sheet) && level < 3){ level++; sheet.className = 'sheet t' + level; }
+    return sheetFits(sheet);
+  }
+  let lastFits = true;
+  function renderPreview(){
+    lastFits = mountSheet($('#sheetScale'), draft, settings);
+    $('#fitHint').hidden = lastFits;
+    fitPreview(); saveDraft();
+  }
 
   /* ---------- form ---------- */
   function newDraft(){
@@ -454,20 +553,33 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     return true;
   }
   function cleanItems(){ return draft.items.filter(it => it.desc.trim() || it.rate).map(it => ({ desc:it.desc.trim(), rate:it.rate })); }
-  function save(){
+  async function save(){
     if(!validate()) return null;
     const items = cleanItems();
     const rec = { id:draft.id, client:draft.client.trim(), date:draft.date, number:(draft.number || '').trim(), items, total:sumItems(items), paid:!!draft.paid };
+    // Nama klien diganti pada invoice yang sudah tersimpan: kemungkinan besar ini order baru, jangan menimpa yang lama diam-diam.
+    if(rec.id){
+      const old = invoices.find(x => x.id === rec.id);
+      if(old && old.client.trim().toLowerCase() !== rec.client.toLowerCase()){
+        const c = await choose('Nama klien diubah dari "' + old.client + '" menjadi "' + rec.client + '". Simpan sebagai invoice baru, atau ubah invoice yang lama?',
+          ['Simpan sebagai invoice baru', 'Ubah invoice yang lama', 'Batal']);
+        if(c === 2) return null;
+        if(c === 0){
+          rec.id = null; draft.id = null; draft.paid = false; rec.paid = false;
+          if(!draft.number || draft.number === old.number){ draft.number = freshNumber(draft.date); draft.numAuto = true; rec.number = draft.number; }
+        }
+      }
+    }
     if(rec.number && invoices.some(x => x.id !== rec.id && x.number === rec.number)){
       if(!confirm('Nomor ' + rec.number + ' sudah dipakai invoice lain. Tetap simpan?')) return null;
     }
     draft.items = copyItems(items);
     if(rec.id){ const i = invoices.findIndex(x => x.id === rec.id); if(i >= 0){ rec.createdAt = invoices[i].createdAt; invoices[i] = rec; } else { invoices.push(rec); } }
     else { rec.id = Date.now().toString(36); rec.createdAt = Date.now(); invoices.push(rec); draft.id = rec.id; }
-    persist(); refreshLists(); renderHistory(); renderBanner(); fillForm();
+    persist(); noteNumber(rec.number); refreshLists(); renderHistory(); renderBanner(); fillForm();
     return rec;
   }
-  $('#btnSave').addEventListener('click', () => { if(save()) toast('Tersimpan di Riwayat'); });
+  $('#btnSave').addEventListener('click', async () => { if(await save()) toast('Tersimpan di Riwayat'); });
   $('#btnDelete').addEventListener('click', () => {
     if(!draft.id) return;
     if(!confirm('Hapus invoice untuk ' + draft.client + '? Tidak bisa dikembalikan.')) return;
@@ -489,29 +601,60 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   }
 
   /* ---------- PDF ---------- */
+  // Kumpulkan setiap potongan teks beserta posisinya di lembar, untuk lapisan teks yang bisa disalin di PDF.
+  function collectRuns(sheet){
+    const base = sheet.getBoundingClientRect(), out = [];
+    const walker = document.createTreeWalker(sheet, NodeFilter.SHOW_TEXT);
+    let node;
+    while((node = walker.nextNode())){
+      const text = node.nodeValue.replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
+      if(!text) continue;
+      const range = document.createRange(); range.selectNodeContents(node);
+      const r = range.getBoundingClientRect(); if(!r.width) continue;
+      const fs = parseFloat(getComputedStyle(node.parentElement).fontSize) || 16;
+      out.push({ text, x:r.left - base.left, y:r.top - base.top, w:r.width, fs });
+    }
+    return out;
+  }
   async function renderCanvas(rec){
     if(!window.html2canvas || !window.jspdf) throw new Error('lib');
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
     const host = document.createElement('div');
     host.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;height:1123px';
-    host.innerHTML = sheetHTML(rec, settings);
     document.body.appendChild(host);
     try{
-      if(document.fonts && document.fonts.ready) await document.fonts.ready;
-      return await html2canvas(host.firstElementChild, { scale:2, backgroundColor:'#ffffff', useCORS:true });
+      if(!mountSheet(host, rec, settings)) throw new Error('fit');
+      const sheet = host.firstElementChild;
+      const runs = collectRuns(sheet);
+      const canvas = await html2canvas(sheet, { scale:2, backgroundColor:'#ffffff', useCORS:true });
+      return { canvas, runs };
     } finally { host.remove(); }
   }
   async function makePdf(rec){
-    const canvas = await renderCanvas(rec);
+    const { canvas, runs } = await renderCanvas(rec);
     const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
+    const k = 595.28 / 794;
     pdf.addImage(canvas.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, 595.28, 841.89);
+    // Lapisan teks tak terlihat di atas gambar: tampilan tetap sama, tapi nomor rekening, nama, dan total bisa diblok & disalin.
+    try{
+      pdf.setFont('helvetica', 'normal');
+      runs.forEach(r => {
+        const t = r.text.replace(/[^\x20-\x7E -ÿ]/g, '');
+        if(!t) return;
+        pdf.setFontSize(r.fs * k);
+        const cs = t.length > 1 ? (r.w * k - pdf.getTextWidth(t)) / (t.length - 1) : 0;
+        pdf.text(t, r.x * k, r.y * k, { baseline:'top', renderingMode:'invisible', charSpace:cs });
+      });
+    }catch(e){ /* lapisan teks hanya tambahan; PDF tetap sah tanpanya */ }
     return pdf.output('blob');
   }
   async function makeImage(rec){
-    const canvas = await renderCanvas(rec);
+    const { canvas } = await renderCanvas(rec);
     return new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('img')), 'image/png'));
   }
   async function exportFile(kind){
-    const rec = save(); if(!rec) return;
+    const rec = await save(); if(!rec) return;
+    if(!lastFits){ toast('Item terlalu banyak untuk satu halaman. Kurangi item atau pecah jadi dua invoice.'); return; }
     const btn = $(kind === 'pdf' ? '#btnPdf' : '#btnImg'); btn.disabled = true; const old = btn.textContent; btn.textContent = 'Membuat…';
     try{
       const blob = kind === 'pdf' ? await makePdf(rec) : await makeImage(rec);
@@ -520,7 +663,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       const r = await deliverFile(blob, name, kind === 'pdf' ? 'application/pdf' : 'image/png');
       if(r === 'downloaded') toast(kind === 'pdf' ? 'PDF dibuat' : 'Gambar dibuat');
     }catch(e){
-      toast('Gagal membuat ' + (kind === 'pdf' ? 'PDF' : 'gambar'));
+      toast(e && e.message === 'fit' ? 'Item terlalu banyak untuk satu halaman.' : 'Gagal membuat ' + (kind === 'pdf' ? 'PDF' : 'gambar'));
     }finally{ btn.disabled = false; btn.textContent = old; }
   }
   $('#btnPdf').addEventListener('click', () => exportFile('pdf'));
@@ -555,10 +698,10 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       return;
     }
     el.innerHTML = (q ? '<div class="sec-title">Hasil pencarian di semua bulan</div>' : '') + rows.map(i =>
-      '<div class="item" data-id="' + i.id + '"><div class="main"><div class="nm">' + esc(i.client) + '</div>' +
+      '<div class="item" data-id="' + esc(i.id) + '"><div class="main"><div class="nm">' + esc(i.client) + '</div>' +
       '<div class="meta">' + esc(fmtDate(i.date)) + (i.number ? ' · ' + esc(i.number) : '') + ' · ' + esc(i.items.map(it => it.desc).join(' + ')) + '</div></div>' +
       '<div><div class="amt">' + fmtRp(i.total) + '</div>' +
-      '<div style="text-align:right"><button class="chip ' + (i.paid ? 'paid' : 'unpaid') + '" data-toggle="' + i.id + '" type="button">' + (i.paid ? 'Lunas' : 'Belum dibayar') + '</button></div></div></div>'
+      '<div style="text-align:right"><button class="chip ' + (i.paid ? 'paid' : 'unpaid') + '" data-toggle="' + esc(i.id) + '" type="button">' + (i.paid ? 'Lunas' : 'Belum dibayar') + '</button></div></div></div>'
     ).join('');
   }
   $('#search').addEventListener('input', renderHistory);
@@ -568,7 +711,18 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   $('#seg').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; hStatus = b.dataset.s; renderHistory(); });
   $('#list').addEventListener('click', e => {
     const tg = e.target.closest('[data-toggle]');
-    if(tg){ const rec = invoices.find(x => x.id === tg.dataset.toggle); if(rec){ rec.paid = !rec.paid; persist(); renderHistory(); if(draft.id === rec.id) draft.paid = rec.paid; } return; }
+    if(tg){
+      const rec = invoices.find(x => x.id === tg.dataset.toggle);
+      if(rec){
+        const next = rec.paid ? 'Belum dibayar' : 'Lunas';
+        choose('Ubah status "' + rec.client + '" (' + fmtRp(rec.total) + ') menjadi ' + next + '?', ['Ya, jadikan ' + next, 'Batal']).then(c => {
+          if(c !== 0) return;
+          rec.paid = !rec.paid; persist(); renderHistory();
+          if(draft.id === rec.id){ draft.paid = rec.paid; saveDraft(); }
+        });
+      }
+      return;
+    }
     const it = e.target.closest('.item'); if(!it) return;
     const rec = invoices.find(x => x.id === it.dataset.id); if(!rec) return;
     draft = Object.assign({}, rec, { numAuto:false, items: copyItems(rec.items) });
@@ -594,7 +748,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     b.hidden = !due; $('#backupText').textContent = text;
   }
   async function doExport(){
-    const blob = new Blob([JSON.stringify({ app:'invoice-endorse', version:2, settings, invoices }, null, 2)], { type:'application/json' });
+    const blob = new Blob([JSON.stringify({ app:'invoice-endorse', version:3, settings, invoices, counters:meta.counters }, null, 2)], { type:'application/json' });
     const r = await deliverFile(blob, 'cadangan-invoice-' + todayISO() + '.json', 'application/json');
     if(r === 'cancelled') return;
     meta.lastBackup = Date.now(); meta.snoozeUntil = 0; saveMeta(); renderBanner(); renderBackupInfo(); toast('Cadangan disimpan');
@@ -630,7 +784,16 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
         const data = JSON.parse(r.result);
         if(!data || !Array.isArray(data.invoices)) throw new Error('bad');
         if(!confirm('Pulihkan ' + data.invoices.length + ' invoice? Data di perangkat ini akan diganti.')) return;
-        invoices = data.invoices.map(normalize); settings = Object.assign({}, DEFAULT_SETTINGS, data.settings || {});
+        invoices = data.invoices.map(normalize).filter(Boolean);
+        settings = Object.assign({}, DEFAULT_SETTINGS, (data.settings && typeof data.settings === 'object') ? data.settings : {});
+        const bd = parseInt(settings.backupDays, 10);
+        settings.backupDays = [0, 7, 14, 20, 30].indexOf(bd) >= 0 ? bd : 20;
+        settings.autoNumber = settings.autoNumber !== false;
+        ['bank', 'account', 'instagram', 'tiktok', 'defaultDesc'].forEach(k => { settings[k] = String(settings[k] == null ? '' : settings[k]); });
+        if(data.counters && typeof data.counters === 'object'){
+          Object.keys(data.counters).forEach(k => { const n = parseInt(data.counters[k], 10); if(/^INV-\d{6}-$/.test(k) && n > (meta.counters[k] || 0)) meta.counters[k] = n; });
+        }
+        invoices.forEach(i => noteNumber(i.number)); saveMeta();
         persist(); store.set('inv-settings', settings);
         loadSettingsForm(); refreshLists(); renderHistory(); renderBanner(); draft = newDraft(); fillForm(); toast('Data dipulihkan');
       }catch(err){ toast('File cadangan tidak valid'); }
@@ -644,18 +807,20 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   function showTab(name){
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'view-' + name));
     document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
-    if(name === 'create'){ $('#pageTitle').textContent = draft.id ? 'Edit invoice' : 'Invoice baru'; $('#pageSub').textContent = 'Isi detail, cek pratinjau, lalu buat PDF.'; fitPreview(); }
+    if(name === 'create'){ $('#pageTitle').textContent = draft.id ? 'Edit invoice' : 'Invoice baru'; $('#pageSub').textContent = 'Isi detail, cek pratinjau, lalu buat PDF.'; renderPreview(); }
     else { $('#pageTitle').textContent = TITLES[name][0]; $('#pageSub').textContent = TITLES[name][1]; }
     if(name === 'settings') renderBackupInfo();
     window.scrollTo(0,0);
   }
   document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
   window.addEventListener('resize', fitPreview);
-  if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitPreview);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(renderPreview);
 
   /* ---------- mulai ---------- */
   draft = newDraft();
+  const restoredDraft = restoreDraft();
   loadSettingsForm(); refreshLists(); fillForm(); renderHistory(); renderBackupInfo(); renderBanner();
+  if(restoredDraft){ const h = $('#clientHint'); h.textContent = 'Draf yang belum disimpan dipulihkan.'; h.hidden = false; }
 
   // Minta browser menjaga data agar tidak dibersihkan otomatis, dan aktifkan mode offline
   try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
