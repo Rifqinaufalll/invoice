@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Invoice">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#3330d0">
+<meta name="robots" content="noindex, nofollow">
+<title>Invoice Endorse</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<script src="defaults.js"></script>
+<script src="vendor/html2canvas.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<style>
+@font-face{font-family:'Lexend';font-style:normal;font-weight:400 700;font-display:swap;src:url(fonts/lexend-latin.woff2) format('woff2')}
+:root{
+  --bg:#f3f4fa; --card:#fff; --ink:#1b2333; --muted:#64748b; --line:#e2e6f0;
+  --brand:#3330d0; --brand-ink:#fff; --ok:#0f7b4a; --ok-bg:#e1f5ea; --warn:#9a5b00; --warn-bg:#fff1d6; --danger:#c0322b;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Lexend',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.45;-webkit-text-size-adjust:100%}
+.app{max-width:560px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+.top{padding:calc(18px + env(safe-area-inset-top)) 0 10px}
+.top h1{margin:0;font-size:22px;font-weight:700;letter-spacing:-.2px}
+.top p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.card h2{margin:0 0 12px;font-size:15px;font-weight:600}
+label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin:12px 0 5px}
+label:first-of-type{margin-top:0}
+label .opt{font-weight:400;color:#94a3b8}
+label.check{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);margin:14px 0 0}
+label.check input{width:20px;height:20px;accent-color:var(--brand);flex:0 0 auto}
+input[type=text],input[type=date],input[type=search],select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:46px;appearance:none;-webkit-appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,#64748b 50%),linear-gradient(135deg,#64748b 50%,transparent 50%);background-position:calc(100% - 19px) 50%,calc(100% - 14px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:transparent}
+.row{display:flex;gap:10px;align-items:flex-end}
+.row>*{flex:1;min-width:0}
+.row .shrink{flex:0 0 auto}
+.money{position:relative}
+.money span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;pointer-events:none}
+.money input{padding-left:42px}
+.hint{font-size:12px;color:var(--muted);margin:6px 0 0}
+.it{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;background:#fafbff}
+.it .row{margin-top:8px;align-items:center}
+.it .x{flex:0 0 46px;height:46px;border:1px solid var(--line);background:#fff;border-radius:12px;color:var(--danger);font-size:22px;line-height:1;cursor:pointer}
+.it .x:disabled{opacity:.35;cursor:default}
+.totalbox{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.totalbox span{color:var(--muted);font-size:13px;font-weight:500}
+.totalbox strong{font-size:20px}
+.btn{font:inherit;font-weight:600;font-size:15px;border:0;border-radius:12px;padding:12px 16px;min-height:46px;cursor:pointer;background:var(--brand);color:var(--brand-ink)}
+.btn.ghost{background:#eceefa;color:var(--brand)}
+.btn.line{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:#fdecea;color:var(--danger)}
+.btn.sm{min-height:38px;padding:8px 12px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:active{transform:scale(.98)}
+.actions{display:flex;gap:10px;margin:2px 0 14px}
+.actions .btn{flex:1}
+.mode{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px}
+.mode b{font-size:13px;color:var(--brand)}
+.sec-title{font-size:13px;font-weight:600;color:var(--muted);margin:6px 2px 8px}
+.preview-wrap{width:100%;overflow:hidden;border-radius:10px;border:1px solid var(--line);background:#fff;box-shadow:0 6px 24px rgba(30,30,80,.08)}
+#sheetScale{transform-origin:0 0;width:794px}
+
+.banner{background:var(--warn-bg);color:#6b4100;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-size:13px}
+.banner[hidden]{display:none}
+.banner p{margin:0 0 10px}
+.banner .acts{display:flex;gap:8px}
+.banner .btn{flex:1;background:#fff;color:#6b4100}
+.banner .btn.main{background:#6b4100;color:#fff}
+
+/* tabs */
+.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:10}
+.tabs button{flex:1;font:inherit;font-size:12px;font-weight:500;background:none;border:0;color:var(--muted);padding:6px 4px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:48px}
+.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabs button.on{color:var(--brand);font-weight:600}
+
+/* history */
+.monthbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.monthbar .mlabel{flex:1;text-align:center;font-weight:600;font-size:15px}
+.monthbar .btn{min-width:44px;padding:8px 10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat.wide{grid-column:1/-1}
+.stat small{display:block;color:var(--muted);font-size:12px}
+.stat strong{display:block;font-size:17px;margin-top:2px}
+.stat.wide strong{font-size:22px}
+.stat em{font-style:normal;font-size:12px;color:var(--muted)}
+.seg{display:flex;background:#e6e8f4;border-radius:12px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;font:inherit;font-size:13px;font-weight:500;border:0;background:none;padding:8px 4px;border-radius:9px;color:var(--muted);cursor:pointer}
+.seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(30,30,80,.12)}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;cursor:pointer}
+.item .main{flex:1;min-width:0}
+.item .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .meta{font-size:12px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.item .amt{font-weight:600;font-size:14px;text-align:right}
+.chip{display:inline-block;font:inherit;font-size:11px;font-weight:600;border-radius:99px;padding:4px 10px;border:0;margin-top:5px;cursor:pointer}
+.chip.paid{background:var(--ok-bg);color:var(--ok)}
+.chip.unpaid{background:var(--warn-bg);color:var(--warn)}
+.empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:14px}
+.searchbar{margin-bottom:12px}
+
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#1b2333;color:#fff;font-size:14px;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:20;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ===== lembar invoice (ukuran A4: 794 x 1123) ===== */
+.sheet{width:794px;height:1123px;background:#fff;position:relative;font-family:'Lexend',system-ui,sans-serif;color:#1e2a3a;overflow:hidden}
+.sh-head{height:185px;background:linear-gradient(90deg,#3333d0 0%,#000 100%);display:flex;align-items:center;padding-left:80px}
+.sh-head h2{margin:0;color:#fff;font-size:48px;font-weight:700;letter-spacing:.5px}
+.sh-client{padding:34px 76px 0}
+.sh-h{font-size:26px;font-weight:700}
+.sh-name{margin-top:14px;font-size:19px;font-weight:700;color:#000;line-height:1.35;min-height:52px;max-width:600px}
+.sh-date{margin:78px 0 0 70px;display:flex;gap:30px;align-items:baseline;font-size:16px}
+.sh-date .lbl{color:#64809a}
+.sh-date b{font-weight:700}
+.sh-date .no{margin-left:auto;margin-right:84px;display:flex;gap:14px;align-items:baseline}
+.sh-bar{margin:14px 40px 0;height:52px;background:linear-gradient(90deg,#000 0%,#3333d0 100%);color:#fff;font-weight:700;font-size:17px;display:grid;grid-template-columns:1fr 170px 190px;align-items:center}
+.sh-bar span:nth-child(1){padding-left:46px}
+.sh-bar span:nth-child(2),.sh-bar span:nth-child(3){text-align:center}
+.sh-body{min-height:190px;padding-top:36px}
+.sh-row{margin:0 40px 14px;display:grid;grid-template-columns:1fr 170px 190px;align-items:start;font-size:16px}
+.sh-row b{padding-left:46px;font-weight:700;line-height:1.35;padding-right:12px}
+.sh-row span{text-align:center;color:#64809a;font-weight:500}
+.sh-total{margin:0;padding-right:84px;display:flex;justify-content:flex-end;gap:62px;align-items:baseline;font-weight:700}
+.sh-total .l{font-size:17px}
+.sh-total .v{font-size:20px}
+.sh-bank-bar{margin:118px 40px 0;height:52px;background:linear-gradient(90deg,#000 0%,#3333d0 100%);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;padding-left:46px}
+.sh-bank{padding:34px 70px 0}
+.sh-bank .bn{font-size:23px;font-weight:700}
+.sh-bank .ac{margin-top:2px;font-size:19px}
+.sh-bank .ac .lbl{color:#64809a;margin-right:6px}
+.sh-bank .ac b{font-weight:700}
+.sh-foot{position:absolute;left:56px;right:70px;bottom:46px;display:flex;justify-content:space-between;font-size:16px}
+.sh-foot .lbl{color:#64809a;margin-right:8px}
+.sh-foot b{font-weight:700}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1 id="pageTitle">Invoice baru</h1>
+    <p id="pageSub">Isi detail, cek pratinjau, lalu buat PDF.</p>
+  </header>
+
+  <div class="banner" id="backupBanner" hidden>
+    <p id="backupText"></p>
+    <div class="acts">
+      <button class="btn main sm" id="bkNow" type="button">Cadangkan sekarang</button>
+      <button class="btn sm" id="bkLater" type="button">Nanti</button>
+    </div>
+  </div>
+
+  <!-- ===== BUAT ===== -->
+  <section id="view-create" class="view on">
+    <div class="card">
+      <div class="mode"><b id="modeLabel">Invoice baru</b><button class="btn ghost sm" id="btnNew" type="button">+ Baru</button></div>
+
+      <label for="client">Nama klien</label>
+      <input type="text" id="client" list="clientList" placeholder="mis. Warung Sop Pak Bayu" autocomplete="off" enterkeyhint="next">
+      <datalist id="clientList"></datalist>
+      <p class="hint" id="clientHint" hidden></p>
+
+      <label for="date">Tanggal</label>
+      <div class="row">
+        <input type="date" id="date">
+        <button class="btn ghost shrink" id="btnToday" type="button">Hari ini</button>
+      </div>
+
+      <label for="invNo">Nomor invoice <span class="opt">(kosongkan kalau tidak perlu)</span></label>
+      <input type="text" id="invNo" placeholder="INV-202611-001" autocomplete="off" autocapitalize="characters">
+
+      <label>Item</label>
+      <div id="items"></div>
+      <datalist id="descList"></datalist>
+      <button class="btn ghost sm" id="btnAddItem" type="button">+ Tambah item</button>
+      <div class="totalbox"><span>Total</span><strong id="totalView">Rp 0</strong></div>
+      <p class="hint">Total otomatis dijumlahkan dari semua item.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn line" id="btnSave" type="button">Simpan</button>
+      <button class="btn" id="btnPdf" type="button">Buat PDF</button>
+    </div>
+    <div class="actions" id="editRow" style="display:none">
+      <button class="btn ghost sm" id="btnDup" type="button">Duplikat untuk order baru</button>
+      <button class="btn danger sm" id="btnDelete" type="button">Hapus</button>
+    </div>
+
+    <div class="sec-title">Pratinjau</div>
+    <div class="preview-wrap" id="previewWrap"><div id="sheetScale"></div></div>
+  </section>
+
+  <!-- ===== RIWAYAT ===== -->
+  <section id="view-history" class="view">
+    <div class="monthbar">
+      <button class="btn line sm" id="mPrev" type="button" aria-label="Bulan sebelumnya">‹</button>
+      <div class="mlabel" id="mLabel"></div>
+      <button class="btn line sm" id="mNext" type="button" aria-label="Bulan berikutnya">›</button>
+      <button class="btn ghost sm" id="mAll" type="button">Semua</button>
+    </div>
+    <div class="stats">
+      <div class="stat wide"><small>Total tagihan</small><strong id="stTotal">Rp 0</strong><em id="stTotalN"></em></div>
+      <div class="stat"><small>Lunas</small><strong id="stPaid">Rp 0</strong><em id="stPaidN"></em></div>
+      <div class="stat"><small>Belum dibayar</small><strong id="stUnpaid">Rp 0</strong><em id="stUnpaidN"></em></div>
+    </div>
+    <div class="seg" id="seg">
+      <button data-s="all" class="on" type="button">Semua</button>
+      <button data-s="unpaid" type="button">Belum dibayar</button>
+      <button data-s="paid" type="button">Lunas</button>
+    </div>
+    <div class="searchbar"><input type="search" id="search" placeholder="Cari klien atau nomor (semua bulan)…"></div>
+    <div id="list"></div>
+  </section>
+
+  <!-- ===== PENGATURAN ===== -->
+  <section id="view-settings" class="view">
+    <div class="card">
+      <h2>Info yang tercetak di invoice</h2>
+      <label for="sBank">Bank</label>
+      <input type="text" id="sBank">
+      <label for="sAcc">Nomor rekening & atas nama</label>
+      <input type="text" id="sAcc">
+      <label for="sIg">Instagram</label>
+      <input type="text" id="sIg">
+      <label for="sTt">TikTok</label>
+      <input type="text" id="sTt">
+      <label for="sDesc">Deskripsi bawaan</label>
+      <input type="text" id="sDesc">
+      <label class="check"><input type="checkbox" id="sAuto"> Isi nomor invoice otomatis</label>
+      <p class="hint">Tersimpan otomatis di perangkat ini.</p>
+    </div>
+    <div class="card">
+      <h2>Cadangan data</h2>
+      <p class="hint" style="margin:0 0 12px">Semua data hanya ada di perangkat ini. Simpan cadangan sesekali (misalnya ke Files atau kirim ke WhatsApp sendiri) supaya aman kalau ganti HP.</p>
+      <div class="actions" style="margin:0 0 12px">
+        <button class="btn line" id="btnExport" type="button">Simpan cadangan</button>
+        <button class="btn line" id="btnImport" type="button">Pulihkan</button>
+      </div>
+      <input type="file" id="fileImport" accept="application/json,.json" hidden>
+      <p class="hint" id="lastBackup" style="margin:0 0 12px"></p>
+      <label for="sRemind">Ingatkan saya untuk cadangan</label>
+      <select id="sRemind">
+        <option value="7">Setiap 7 hari</option>
+        <option value="14">Setiap 14 hari</option>
+        <option value="20">Setiap 20 hari</option>
+        <option value="30">Setiap 30 hari</option>
+        <option value="0">Jangan ingatkan</option>
+      </select>
+      <p class="hint">Pengingat muncul di dalam aplikasi saat kamu membukanya.</p>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs" aria-label="Menu">
+  <button data-tab="create" class="on" type="button">
+    <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Buat</button>
+  <button data-tab="history" type="button">
+    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Riwayat</button>
+  <button data-tab="settings" type="button">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Pengaturan</button>
+</nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const store = {
+    get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
+    set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
+  };
+  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const MONTH_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const BASE_SETTINGS = { bank:'', account:'', instagram:'', tiktok:'', defaultDesc:'Visit Kedai', autoNumber:true, backupDays:20 };
+  const DEFAULT_SETTINGS = Object.assign({}, BASE_SETTINGS, window.APP_DEFAULTS || {});
+
+  let settings = Object.assign({}, DEFAULT_SETTINGS, store.get('inv-settings', {}));
+  let invoices = store.get('inv-list', []);
+  let meta = Object.assign({ lastBackup:0, snoozeUntil:0 }, store.get('inv-meta', {}));
+  let draft;
+  let hMonth, hStatus = 'all';
+
+  function sumItems(items){ return (items || []).reduce((a, it) => a + (it.rate || 0), 0); }
+  function normalize(i){
+    if(!Array.isArray(i.items)) i.items = [{ desc:i.desc || '', rate:i.rate || 0 }];
+    i.total = sumItems(i.items);
+    return i;
+  }
+  invoices = invoices.map(normalize);
+
+  /* ---------- helpers ---------- */
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const pad = n => String(n).padStart(2,'0');
+  const copyItems = items => items.map(it => ({ desc:it.desc, rate:it.rate }));
+  function todayISO(){ const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+  function fmtDate(iso){ const p = (iso||'').split('-'); if(p.length !== 3) return ''; return parseInt(p[2],10) + ' ' + MONTHS[parseInt(p[1],10)-1] + ' ' + p[0]; }
+  function fmtNum(n){ return String(Math.round(n||0)).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+  function fmtRp(n){ return 'Rp ' + fmtNum(n); }
+  function parseNum(s){ return parseInt(String(s||'').replace(/\D/g,''),10) || 0; }
+  let toastT;
+  function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 2600); }
+  function persist(){ if(!store.set('inv-list', invoices)) toast('Gagal menyimpan: penyimpanan browser tidak tersedia'); }
+  function saveMeta(){ store.set('inv-meta', meta); }
+  const byDateDesc = (a,b) => (b.date||'').localeCompare(a.date||'') || (b.createdAt||0) - (a.createdAt||0);
+
+  function nextNumber(iso){
+    const prefix = 'INV-' + (iso || todayISO()).slice(0,7).replace('-','') + '-';
+    let max = 0;
+    invoices.forEach(i => { if(i.number && i.number.indexOf(prefix) === 0){ const n = parseInt(i.number.slice(prefix.length),10); if(n > max) max = n; } });
+    return prefix + String(max + 1).padStart(3,'0');
+  }
+  const freshNumber = iso => settings.autoNumber ? nextNumber(iso) : '';
+
+  /* ---------- lembar invoice ---------- */
+  function sheetHTML(d, s){
+    return '<div class="sheet">' +
+      '<div class="sh-head"><h2>INVOICE</h2></div>' +
+      '<div class="sh-client"><div class="sh-h">CLIENT</div><div class="sh-name">' + (esc(d.client) || '&nbsp;') + '</div></div>' +
+      '<div class="sh-date"><span class="lbl">Date Issued:</span><b>' + esc(fmtDate(d.date)) + '</b>' +
+        (d.number ? '<span class="no"><span class="lbl">Invoice No:</span><b>' + esc(d.number) + '</b></span>' : '') + '</div>' +
+      '<div class="sh-bar"><span>DESCRIPTION</span><span>RATE</span><span>SUBTOTAL</span></div>' +
+      '<div class="sh-body">' + d.items.map(it => '<div class="sh-row"><b>' + esc(it.desc) + '</b><span>' + fmtRp(it.rate) + '</span><span>' + fmtRp(it.rate) + '</span></div>').join('') + '</div>' +
+      '<div class="sh-total"><span class="l">Total Amount</span><span class="v">' + fmtRp(sumItems(d.items)) + '</span></div>' +
+      '<div class="sh-bank-bar">BANK INFO</div>' +
+      '<div class="sh-bank"><div class="bn">' + esc(s.bank) + '</div><div class="ac"><span class="lbl">Account No:</span><b>' + esc(s.account) + '</b></div></div>' +
+      '<div class="sh-foot"><div><span class="lbl">Instagram</span><b>: ' + esc(s.instagram) + '</b></div><div><span class="lbl">Tiktok</span><b>: ' + esc(s.tiktok) + '</b></div></div>' +
+    '</div>';
+  }
+  function fitPreview(){
+    const wrap = $('#previewWrap'); const w = wrap.clientWidth; if(!w) return;
+    const k = w / 794;
+    $('#sheetScale').style.transform = 'scale(' + k + ')';
+    wrap.style.height = (1123 * k) + 'px';
+  }
+  function renderPreview(){ $('#sheetScale').innerHTML = sheetHTML(draft, settings); fitPreview(); }
+
+  /* ---------- form ---------- */
+  function newDraft(){
+    const date = todayISO();
+    return { id:null, client:'', date, number:freshNumber(date), numAuto:true, items:[{ desc:settings.defaultDesc || '', rate:0 }], paid:false };
+  }
+  function renderItems(){
+    const box = $('#items');
+    box.innerHTML = draft.items.map((it, i) =>
+      '<div class="it" data-i="' + i + '">' +
+        '<input type="text" class="it-desc" list="descList" placeholder="Deskripsi" autocomplete="off" value="' + esc(it.desc) + '">' +
+        '<div class="row"><div class="money"><span>Rp</span><input type="text" class="it-rate" inputmode="numeric" placeholder="Rate" autocomplete="off" value="' + (it.rate ? fmtNum(it.rate) : '') + '"></div>' +
+        '<button class="x" type="button" aria-label="Hapus item"' + (draft.items.length < 2 ? ' disabled' : '') + '>×</button></div>' +
+      '</div>'
+    ).join('');
+    updateTotal();
+  }
+  function updateTotal(){ $('#totalView').textContent = fmtRp(sumItems(draft.items)); }
+  function fillForm(){
+    $('#client').value = draft.client;
+    $('#date').value = draft.date;
+    $('#invNo').value = draft.number || '';
+    $('#clientHint').hidden = true;
+    renderItems();
+    const editing = !!draft.id;
+    $('#modeLabel').textContent = editing ? 'Mengedit invoice' : 'Invoice baru';
+    $('#pageTitle').textContent = editing ? 'Edit invoice' : 'Invoice baru';
+    $('#editRow').style.display = editing ? 'flex' : 'none';
+    renderPreview();
+  }
+  function refreshLists(){
+    const all = []; invoices.forEach(i => i.items.forEach(it => all.push(it.desc)));
+    const set = new Set([settings.defaultDesc, 'Owning Content'].concat(all).filter(Boolean));
+    $('#descList').innerHTML = Array.from(set).map(v => '<option value="' + esc(v) + '">').join('');
+    const seen = new Set(), names = [];
+    invoices.slice().sort(byDateDesc).forEach(i => { const k = i.client.toLowerCase(); if(!seen.has(k)){ seen.add(k); names.push(i.client); } });
+    $('#clientList').innerHTML = names.map(v => '<option value="' + esc(v) + '">').join('');
+  }
+
+  // Klien yang pernah ada: isi item dari invoice terakhirnya (kalau form masih kosong)
+  function autofillFromClient(){
+    draft.client = $('#client').value;
+    if(draft.id || draft.items.some(it => it.rate)) return;
+    const name = draft.client.trim().toLowerCase(); if(!name) return;
+    const last = invoices.filter(i => i.client.toLowerCase() === name).sort(byDateDesc)[0];
+    if(!last) return;
+    draft.client = last.client; $('#client').value = last.client;
+    draft.items = copyItems(last.items);
+    renderItems(); renderPreview();
+    const h = $('#clientHint');
+    h.textContent = 'Item diisi dari invoice terakhir klien ini. Ubah rate seperlunya.'; h.hidden = false;
+  }
+  $('#client').addEventListener('input', e => {
+    draft.client = e.target.value; renderPreview();
+    if(e.inputType === 'insertReplacementText') autofillFromClient();
+  });
+  $('#client').addEventListener('change', autofillFromClient);
+  function setDate(v){
+    draft.date = v || todayISO(); $('#date').value = draft.date;
+    if(draft.numAuto && !draft.id && settings.autoNumber){ draft.number = nextNumber(draft.date); $('#invNo').value = draft.number; }
+    renderPreview();
+  }
+  $('#date').addEventListener('input', e => setDate(e.target.value));
+  $('#btnToday').addEventListener('click', () => setDate(todayISO()));
+  $('#invNo').addEventListener('input', e => { draft.number = e.target.value.trim(); draft.numAuto = false; renderPreview(); });
+  $('#items').addEventListener('input', e => {
+    const row = e.target.closest('.it'); if(!row) return;
+    const it = draft.items[+row.dataset.i]; if(!it) return;
+    if(e.target.classList.contains('it-desc')) it.desc = e.target.value;
+    else if(e.target.classList.contains('it-rate')){ const n = parseNum(e.target.value); it.rate = n; e.target.value = n ? fmtNum(n) : ''; updateTotal(); }
+    renderPreview();
+  });
+  $('#items').addEventListener('click', e => {
+    const x = e.target.closest('.x'); if(!x || draft.items.length < 2) return;
+    draft.items.splice(+x.closest('.it').dataset.i, 1); renderItems(); renderPreview();
+  });
+  $('#btnAddItem').addEventListener('click', () => {
+    const has = draft.items.some(it => it.desc.trim().toLowerCase() === 'owning content');
+    draft.items.push({ desc: has ? '' : 'Owning Content', rate:0 });
+    renderItems(); renderPreview();
+    const rates = document.querySelectorAll('.it-rate'); rates[rates.length - 1].focus();
+  });
+  $('#btnNew').addEventListener('click', () => { draft = newDraft(); fillForm(); window.scrollTo({top:0,behavior:'smooth'}); });
+  $('#btnDup').addEventListener('click', () => {
+    const date = todayISO();
+    draft = { id:null, client:draft.client, date, number:freshNumber(date), numAuto:true, items:copyItems(draft.items), paid:false };
+    fillForm(); window.scrollTo({top:0,behavior:'smooth'});
+    const h = $('#clientHint'); h.textContent = 'Duplikat siap. Cek tanggal dan rate, lalu simpan.'; h.hidden = false;
+  });
+
+  /* ---------- simpan / hapus ---------- */
+  function validate(){
+    if(!draft.client.trim()){ toast('Isi nama klien dulu'); $('#client').focus(); return false; }
+    if(!sumItems(draft.items)){ toast('Isi rate dulu'); const r = document.querySelector('.it-rate'); if(r) r.focus(); return false; }
+    return true;
+  }
+  function cleanItems(){ return draft.items.filter(it => it.desc.trim() || it.rate).map(it => ({ desc:it.desc.trim(), rate:it.rate })); }
+  function save(){
+    if(!validate()) return null;
+    const items = cleanItems();
+    const rec = { id:draft.id, client:draft.client.trim(), date:draft.date, number:(draft.number || '').trim(), items, total:sumItems(items), paid:!!draft.paid };
+    if(rec.number && invoices.some(x => x.id !== rec.id && x.number === rec.number)){
+      if(!confirm('Nomor ' + rec.number + ' sudah dipakai invoice lain. Tetap simpan?')) return null;
+    }
+    draft.items = copyItems(items);
+    if(rec.id){ const i = invoices.findIndex(x => x.id === rec.id); if(i >= 0){ rec.createdAt = invoices[i].createdAt; invoices[i] = rec; } else { invoices.push(rec); } }
+    else { rec.id = Date.now().toString(36); rec.createdAt = Date.now(); invoices.push(rec); draft.id = rec.id; }
+    persist(); refreshLists(); renderHistory(); renderBanner(); fillForm();
+    return rec;
+  }
+  $('#btnSave').addEventListener('click', () => { if(save()) toast('Tersimpan di Riwayat'); });
+  $('#btnDelete').addEventListener('click', () => {
+    if(!draft.id) return;
+    if(!confirm('Hapus invoice untuk ' + draft.client + '? Tidak bisa dikembalikan.')) return;
+    invoices = invoices.filter(x => x.id !== draft.id); persist(); renderHistory(); refreshLists();
+    draft = newDraft(); fillForm(); toast('Invoice dihapus');
+  });
+
+  /* ---------- kirim / unduh file ---------- */
+  async function deliverFile(blob, name, type){
+    const file = new File([blob], name, { type });
+    if(navigator.canShare && navigator.canShare({ files:[file] })){
+      try{ await navigator.share({ files:[file], title:name }); return 'shared'; }
+      catch(e){ if(e && e.name === 'AbortError') return 'cancelled'; }
+    }
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    return 'downloaded';
+  }
+
+  /* ---------- PDF ---------- */
+  async function makePdf(rec){
+    if(!window.html2canvas || !window.jspdf) throw new Error('lib');
+    const host = document.createElement('div');
+    host.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;height:1123px';
+    host.innerHTML = sheetHTML(rec, settings);
+    document.body.appendChild(host);
+    try{
+      if(document.fonts && document.fonts.ready) await document.fonts.ready;
+      const canvas = await html2canvas(host.firstElementChild, { scale:2, backgroundColor:'#ffffff', useCORS:true });
+      const pdf = new window.jspdf.jsPDF({ unit:'pt', format:'a4', orientation:'portrait' });
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, 595.28, 841.89);
+      return pdf.output('blob');
+    } finally { host.remove(); }
+  }
+  async function exportPdf(){
+    const rec = save(); if(!rec) return;
+    const btn = $('#btnPdf'); btn.disabled = true; const old = btn.textContent; btn.textContent = 'Membuat…';
+    try{
+      const blob = await makePdf(rec);
+      const safe = s => s.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim();
+      const name = 'Invoice - ' + safe(rec.client) + ' - ' + rec.date + (rec.number ? ' - ' + safe(rec.number) : '') + '.pdf';
+      const r = await deliverFile(blob, name, 'application/pdf');
+      if(r === 'downloaded') toast('PDF dibuat');
+    }catch(e){
+      toast('Gagal membuat PDF');
+    }finally{ btn.disabled = false; btn.textContent = old; }
+  }
+  $('#btnPdf').addEventListener('click', exportPdf);
+  window.__makePdf = makePdf; // untuk pengujian
+
+  /* ---------- riwayat ---------- */
+  const curMonth = () => todayISO().slice(0,7);
+  hMonth = curMonth();
+  function monthLabel(ym){ if(ym === 'all') return 'Semua bulan'; const p = ym.split('-'); return MONTH_ID[+p[1]-1] + ' ' + p[0]; }
+  function shiftMonth(ym, delta){ const p = ym.split('-').map(Number); const d = new Date(p[0], p[1]-1+delta, 1); return d.getFullYear() + '-' + pad(d.getMonth()+1); }
+
+  function renderHistory(){
+    const q = $('#search').value.trim().toLowerCase();
+    const inMonth = invoices.filter(i => hMonth === 'all' || (i.date||'').slice(0,7) === hMonth);
+    const paid = inMonth.filter(i => i.paid), unpaid = inMonth.filter(i => !i.paid);
+    const sum = a => a.reduce((s,i) => s + i.total, 0);
+    $('#stTotal').textContent = fmtRp(sum(inMonth)); $('#stTotalN').textContent = inMonth.length + ' invoice';
+    $('#stPaid').textContent = fmtRp(sum(paid)); $('#stPaidN').textContent = paid.length + ' invoice';
+    $('#stUnpaid').textContent = fmtRp(sum(unpaid)); $('#stUnpaidN').textContent = unpaid.length + ' invoice';
+    $('#mLabel').textContent = monthLabel(hMonth);
+    $('#mAll').textContent = hMonth === 'all' ? 'Bulan ini' : 'Semua';
+    document.querySelectorAll('#seg button').forEach(b => b.classList.toggle('on', b.dataset.s === hStatus));
+
+    let rows = q ? invoices.filter(i => i.client.toLowerCase().includes(q) || (i.number || '').toLowerCase().includes(q)) : inMonth;
+    if(hStatus === 'paid') rows = rows.filter(i => i.paid); else if(hStatus === 'unpaid') rows = rows.filter(i => !i.paid);
+    rows = rows.slice().sort(byDateDesc);
+
+    const el = $('#list');
+    if(!rows.length){
+      el.innerHTML = '<div class="empty">' + (!invoices.length ? 'Belum ada invoice.<br>Buat yang pertama di tab Buat.' : q ? 'Tidak ada yang cocok.' : 'Tidak ada invoice di sini.') + '</div>';
+      return;
+    }
+    el.innerHTML = (q ? '<div class="sec-title">Hasil pencarian di semua bulan</div>' : '') + rows.map(i =>
+      '<div class="item" data-id="' + i.id + '"><div class="main"><div class="nm">' + esc(i.client) + '</div>' +
+      '<div class="meta">' + esc(fmtDate(i.date)) + (i.number ? ' · ' + esc(i.number) : '') + ' · ' + esc(i.items.map(it => it.desc).join(' + ')) + '</div></div>' +
+      '<div><div class="amt">' + fmtRp(i.total) + '</div>' +
+      '<div style="text-align:right"><button class="chip ' + (i.paid ? 'paid' : 'unpaid') + '" data-toggle="' + i.id + '" type="button">' + (i.paid ? 'Lunas' : 'Belum dibayar') + '</button></div></div></div>'
+    ).join('');
+  }
+  $('#search').addEventListener('input', renderHistory);
+  $('#mPrev').addEventListener('click', () => { hMonth = shiftMonth(hMonth === 'all' ? curMonth() : hMonth, -1); renderHistory(); });
+  $('#mNext').addEventListener('click', () => { hMonth = shiftMonth(hMonth === 'all' ? curMonth() : hMonth, 1); renderHistory(); });
+  $('#mAll').addEventListener('click', () => { hMonth = hMonth === 'all' ? curMonth() : 'all'; renderHistory(); });
+  $('#seg').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; hStatus = b.dataset.s; renderHistory(); });
+  $('#list').addEventListener('click', e => {
+    const tg = e.target.closest('[data-toggle]');
+    if(tg){ const rec = invoices.find(x => x.id === tg.dataset.toggle); if(rec){ rec.paid = !rec.paid; persist(); renderHistory(); if(draft.id === rec.id) draft.paid = rec.paid; } return; }
+    const it = e.target.closest('.item'); if(!it) return;
+    const rec = invoices.find(x => x.id === it.dataset.id); if(!rec) return;
+    draft = Object.assign({}, rec, { numAuto:false, items: copyItems(rec.items) });
+    fillForm(); showTab('create');
+  });
+
+  /* ---------- cadangan & pengingat ---------- */
+  function daysSince(ts){ return Math.floor((Date.now() - ts) / 86400000); }
+  function renderBackupInfo(){
+    $('#lastBackup').textContent = meta.lastBackup ? 'Cadangan terakhir: ' + (daysSince(meta.lastBackup) === 0 ? 'hari ini' : daysSince(meta.lastBackup) + ' hari lalu') + '.' : 'Belum pernah dicadangkan.';
+  }
+  function renderBanner(){
+    const b = $('#backupBanner');
+    let due = false, text = '';
+    if(invoices.length && settings.backupDays > 0 && meta.snoozeUntil <= Date.now()){
+      const base = meta.lastBackup || Math.min.apply(null, invoices.map(i => i.createdAt || Date.now()));
+      const d = daysSince(base);
+      if(d >= settings.backupDays){
+        due = true;
+        text = meta.lastBackup ? 'Sudah ' + d + ' hari sejak cadangan terakhir. Simpan cadangan supaya riwayat endorse aman.' : 'Data invoice belum pernah dicadangkan. Simpan cadangan supaya riwayat endorse aman.';
+      }
+    }
+    b.hidden = !due; $('#backupText').textContent = text;
+  }
+  async function doExport(){
+    const blob = new Blob([JSON.stringify({ app:'invoice-endorse', version:2, settings, invoices }, null, 2)], { type:'application/json' });
+    const r = await deliverFile(blob, 'cadangan-invoice-' + todayISO() + '.json', 'application/json');
+    if(r === 'cancelled') return;
+    meta.lastBackup = Date.now(); meta.snoozeUntil = 0; saveMeta(); renderBanner(); renderBackupInfo(); toast('Cadangan disimpan');
+  }
+  $('#btnExport').addEventListener('click', doExport);
+  $('#bkNow').addEventListener('click', doExport);
+  $('#bkLater').addEventListener('click', () => { meta.snoozeUntil = Date.now() + 3 * 86400000; saveMeta(); renderBanner(); toast('Diingatkan lagi 3 hari lagi'); });
+  $('#btnImport').addEventListener('click', () => $('#fileImport').click());
+
+  /* ---------- pengaturan ---------- */
+  const sMap = { '#sBank':'bank', '#sAcc':'account', '#sIg':'instagram', '#sTt':'tiktok', '#sDesc':'defaultDesc' };
+  function loadSettingsForm(){
+    Object.keys(sMap).forEach(sel => { $(sel).value = settings[sMap[sel]] || ''; });
+    $('#sAuto').checked = !!settings.autoNumber;
+    $('#sRemind').value = String(settings.backupDays);
+    if($('#sRemind').value !== String(settings.backupDays)) $('#sRemind').value = '20';
+  }
+  Object.keys(sMap).forEach(sel => {
+    $(sel).addEventListener('input', e => {
+      settings[sMap[sel]] = e.target.value; store.set('inv-settings', settings);
+      if(sel === '#sDesc' && !draft.id && !draft.client && draft.items.length === 1 && !draft.items[0].rate){ draft.items[0].desc = e.target.value; renderItems(); }
+      refreshLists(); renderPreview();
+    });
+  });
+  $('#sAuto').addEventListener('change', e => { settings.autoNumber = e.target.checked; store.set('inv-settings', settings); });
+  $('#sRemind').addEventListener('change', e => { settings.backupDays = parseInt(e.target.value, 10) || 0; store.set('inv-settings', settings); renderBanner(); });
+
+  $('#fileImport').addEventListener('change', e => {
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try{
+        const data = JSON.parse(r.result);
+        if(!data || !Array.isArray(data.invoices)) throw new Error('bad');
+        if(!confirm('Pulihkan ' + data.invoices.length + ' invoice? Data di perangkat ini akan diganti.')) return;
+        invoices = data.invoices.map(normalize); settings = Object.assign({}, DEFAULT_SETTINGS, data.settings || {});
+        persist(); store.set('inv-settings', settings);
+        loadSettingsForm(); refreshLists(); renderHistory(); renderBanner(); draft = newDraft(); fillForm(); toast('Data dipulihkan');
+      }catch(err){ toast('File cadangan tidak valid'); }
+      e.target.value = '';
+    };
+    r.readAsText(f);
+  });
+
+  /* ---------- tab ---------- */
+  const TITLES = { history:['Riwayat','Rekap per bulan dan semua invoice.'], settings:['Pengaturan','Info bank, nomor invoice, dan cadangan.'] };
+  function showTab(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === 'view-' + name));
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
+    if(name === 'create'){ $('#pageTitle').textContent = draft.id ? 'Edit invoice' : 'Invoice baru'; $('#pageSub').textContent = 'Isi detail, cek pratinjau, lalu buat PDF.'; fitPreview(); }
+    else { $('#pageTitle').textContent = TITLES[name][0]; $('#pageSub').textContent = TITLES[name][1]; }
+    if(name === 'settings') renderBackupInfo();
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  window.addEventListener('resize', fitPreview);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitPreview);
+
+  /* ---------- mulai ---------- */
+  draft = newDraft();
+  loadSettingsForm(); refreshLists(); fillForm(); renderHistory(); renderBackupInfo(); renderBanner();
+
+  // Minta browser menjaga data agar tidak dibersihkan otomatis, dan aktifkan mode offline
+  try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+  if('serviceWorker' in navigator && location.protocol.indexOf('http') === 0){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
