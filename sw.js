@@ -1,7 +1,8 @@
 // Service worker: menyimpan seluruh aplikasi di perangkat supaya bisa dibuka tanpa internet.
 // Naikkan angka versi di bawah setiap kali file aplikasi diubah, supaya iPhone mengambil yang baru.
-// Angkanya harus sama dengan APP_VERSION di index.html.
-const CACHE = 'invoice-2.3';
+// Angkanya harus sama dengan APP_VERSION di index.html. Halaman juga membaca angka ini untuk tahu versi terbaru di server.
+const VERSION = '2.4';
+const CACHE = 'invoice-' + VERSION;
 const ASSETS = [
   './',
   'index.html',
@@ -33,6 +34,7 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
+  if (url.searchParams.has('nocache')) return;   // permintaan cek versi/koneksi: selalu langsung ke jaringan
   e.respondWith(
     caches.match(e.request, { ignoreSearch: true }).then(cached => {
       const network = fetch(e.request).then(res => {

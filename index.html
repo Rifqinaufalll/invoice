@@ -186,9 +186,9 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   </div>
 
   <div class="banner info" id="updateBanner" hidden>
-    <p>Versi baru tersedia. Simpan dulu invoice yang sedang kamu buat, lalu muat ulang.</p>
+    <p id="updText">Versi baru tersedia. Simpan dulu invoice yang sedang kamu buat, lalu tekan Perbarui.</p>
     <div class="acts">
-      <button class="btn main sm" id="upReload" type="button">Muat ulang</button>
+      <button class="btn main sm" id="upReload" type="button">Perbarui sekarang</button>
       <button class="btn sm" id="upLater" type="button">Nanti</button>
     </div>
   </div>
@@ -296,7 +296,12 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     <div class="card">
       <h2>Tentang aplikasi</h2>
       <p class="hint" style="margin:0 0 12px">Versi <b id="appVersion"></b>. Aplikasi memeriksa pembaruan setiap kali dibuka.</p>
-      <button class="btn line" id="btnCheck" type="button">Periksa pembaruan</button>
+      <p class="hint" id="updStatus" style="margin:0 0 12px"></p>
+      <div class="actions" style="margin:0 0 8px">
+        <button class="btn line" id="btnCheck" type="button">Periksa pembaruan</button>
+        <button class="btn line" id="btnForce" type="button">Perbarui paksa</button>
+      </div>
+      <p class="hint">Perbarui paksa mengunduh ulang seluruh aplikasi. Data invoice dan pengaturanmu tidak terhapus.</p>
     </div>
   </section>
 </div>
@@ -314,7 +319,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 
 <script>
 (function(){
-  const APP_VERSION = '2.3'; // samakan dengan CACHE di sw.js
+  const APP_VERSION = '2.4'; // samakan dengan VERSION di sw.js
   const $ = s => document.querySelector(s);
   const store = {
     get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
@@ -864,7 +869,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
     if(name === 'create'){ $('#pageTitle').textContent = draft.id ? 'Edit invoice' : 'Invoice baru'; $('#pageSub').textContent = 'Isi detail, cek pratinjau, lalu buat PDF.'; renderPreview(); }
     else { $('#pageTitle').textContent = TITLES[name][0]; $('#pageSub').textContent = TITLES[name][1]; }
-    if(name === 'settings') renderBackupInfo();
+    if(name === 'settings'){ renderBackupInfo(); renderUpdStatus(); }
     window.scrollTo(0,0);
   }
   document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
@@ -879,28 +884,78 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 
   // Minta browser menjaga data agar tidak dibersihkan otomatis, dan aktifkan mode offline
   try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
-  let swReg = null, updateReady = false;
+  let swReg = null, updateReady = false, lastCheck = 0, lastResult = '';
+  if(/[?&]u=\d+/.test(location.search)){ try{ history.replaceState(null, '', location.pathname); }catch(e){} }   // rapikan alamat setelah perbarui paksa
   const hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
-  function showUpdate(){ updateReady = true; $('#updateBanner').hidden = false; }
+  function showUpdate(v){
+    updateReady = true;
+    $('#updText').textContent = 'Versi baru' + (v ? ' (' + v + ')' : '') + ' tersedia. Simpan dulu invoice yang sedang kamu buat, lalu tekan Perbarui.';
+    $('#updateBanner').hidden = false;
+  }
   if('serviceWorker' in navigator && location.protocol.indexOf('http') === 0){
     // Versi baru mengambil alih setelah terpasang; kalau sebelumnya sudah ada versi lain, tawarkan muat ulang.
     navigator.serviceWorker.addEventListener('controllerchange', () => { if(hadController) showUpdate(); });
     navigator.serviceWorker.register('sw.js', { updateViaCache:'none' }).then(reg => {
-      swReg = reg; reg.update().catch(function(){});
+      swReg = reg; reg.update().catch(function(){}); checkUpdate(false); renderUpdStatus();
+      navigator.serviceWorker.ready.then(renderUpdStatus);   // segarkan status begitu mode offline benar-benar aktif
       // iPhone jarang memeriksa sendiri, jadi periksa setiap aplikasi dibuka kembali
-      document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') reg.update().catch(function(){}); });
+      document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible'){ reg.update().catch(function(){}); checkUpdate(false); } });
     }).catch(function(){});
   }
   $('#appVersion').textContent = APP_VERSION;
-  $('#upReload').addEventListener('click', () => location.reload());
   $('#upLater').addEventListener('click', () => { $('#updateBanner').hidden = true; });
-  $('#btnCheck').addEventListener('click', async () => {
-    if(!swReg){ toast('Pemeriksaan pembaruan hanya jalan di aplikasi yang sudah dipasang'); return; }
-    const b = $('#btnCheck'); b.disabled = true;
-    try{ await swReg.update(); await new Promise(r => setTimeout(r, 1800)); toast(updateReady ? 'Versi baru siap. Tekan Muat ulang' : 'Sudah versi terbaru (' + APP_VERSION + ')'); }
-    catch(e){ toast('Gagal memeriksa. Cek koneksi internet.'); }
-    b.disabled = false;
-  });
+
+  // Tanya langsung ke server versi terbaru berapa (membaca angka VERSION di sw.js, melewati cache dan service worker).
+  async function fetchServerVersion(){
+    const r = await fetch('sw.js?nocache=' + Date.now(), { cache:'no-store' });
+    if(!r.ok) throw new Error('http');
+    const m = /VERSION\s*=\s*'([0-9.]+)'/.exec(await r.text());
+    if(!m) throw new Error('parse');
+    return m[1];
+  }
+  function hhmm(ts){ const d = new Date(ts); return pad(d.getHours()) + '.' + pad(d.getMinutes()); }
+  function renderUpdStatus(){
+    const parts = ['Versi terpasang ' + APP_VERSION];
+    parts.push(lastCheck ? 'diperiksa ' + hhmm(lastCheck) + ' (' + lastResult + ')' : 'belum diperiksa');
+    parts.push(swReg && swReg.active ? 'mode offline aktif' : 'mode offline belum aktif');
+    $('#updStatus').textContent = parts.join(' · ') + '.';
+  }
+  async function checkUpdate(manual){
+    if(location.protocol.indexOf('http') !== 0){ if(manual) toast('Pemeriksaan pembaruan hanya jalan di aplikasi yang sudah dipasang'); return; }
+    if(!manual && Date.now() - lastCheck < 30000) return;
+    let server;
+    try{ server = await fetchServerVersion(); }
+    catch(e){
+      lastCheck = Date.now(); lastResult = e.message === 'parse' ? 'versi tidak terbaca' : 'tidak ada koneksi';
+      renderUpdStatus(); if(manual) toast('Gagal memeriksa. Cek koneksi internet.'); return;
+    }
+    lastCheck = Date.now();
+    if(server !== APP_VERSION){
+      lastResult = 'ada versi ' + server; showUpdate(server);
+      if(swReg) swReg.update().catch(function(){});
+      if(manual){ window.scrollTo(0, 0); toast('Ada versi baru (' + server + ')'); }
+    }else{
+      lastResult = 'sudah terbaru'; if(manual) toast('Sudah versi terbaru (' + APP_VERSION + ')');
+    }
+    renderUpdStatus();
+  }
+  // Unduh ulang seluruh aplikasi: lepas service worker, hapus salinan offline, muat dari server.
+  // Data invoice & pengaturan ada di localStorage dan tidak disentuh.
+  async function applyUpdate(btn){
+    const label = btn ? btn.textContent : '';
+    if(btn){ btn.disabled = true; btn.textContent = 'Memperbarui…'; }
+    const restore = () => { if(btn){ btn.disabled = false; btn.textContent = label; } };
+    try{ const r = await fetch(location.pathname + '?nocache=' + Date.now(), { cache:'no-store' }); if(!r.ok) throw new Error('http'); }
+    catch(e){ toast('Tidak bisa terhubung. Coba lagi saat ada internet.'); restore(); return; }   // jangan hapus salinan offline kalau sedang offline
+    saveDraft();
+    try{ const regs = navigator.serviceWorker ? await navigator.serviceWorker.getRegistrations() : []; await Promise.all(regs.map(r => r.unregister())); }catch(e){}
+    try{ if(window.caches){ const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); } }catch(e){}
+    location.replace(location.pathname + '?u=' + Date.now());
+  }
+  $('#upReload').addEventListener('click', e => applyUpdate(e.currentTarget));
+  $('#btnForce').addEventListener('click', e => applyUpdate(e.currentTarget));
+  $('#btnCheck').addEventListener('click', async e => { const b = e.currentTarget; b.disabled = true; await checkUpdate(true); b.disabled = false; });
+  renderUpdStatus();
 })();
 </script>
 </body>
