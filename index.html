@@ -58,6 +58,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .btn.ghost{background:#eceefa;color:var(--brand)}
 .btn.line{background:#fff;color:var(--ink);border:1px solid var(--line)}
 .btn.danger{background:#fdecea;color:var(--danger)}
+.btn.red{background:#d32f2f;color:#fff}
 .btn.sm{min-height:38px;padding:8px 12px;font-size:13px}
 .btn:disabled{opacity:.5;cursor:default}
 .btn:active{transform:scale(.98)}
@@ -79,6 +80,14 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .banner.info .btn{color:#25239a}
 .banner.info .btn.main{background:var(--brand);color:#fff}
 .hint.warn{color:var(--danger);font-weight:500}
+textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:78px;resize:vertical;appearance:none;-webkit-appearance:none}
+textarea:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:transparent}
+details.more{border:1px solid var(--line);border-radius:12px;background:#fafbff;margin-top:14px}
+details.more summary{cursor:pointer;padding:12px 14px;font-size:13px;font-weight:600;color:var(--brand);list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:'+ '}
+details.more[open] summary::before{content:'– '}
+details.more .inner{padding:0 14px 14px}
 .modal{position:fixed;inset:0;background:rgba(15,20,40,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:40}
 .modal[hidden]{display:none}
 .modal-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:380px}
@@ -105,7 +114,12 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .seg{display:flex;background:#e6e8f4;border-radius:12px;padding:3px;margin-bottom:12px}
 .seg button{flex:1;font:inherit;font-size:13px;font-weight:500;border:0;background:none;padding:8px 4px;border-radius:9px;color:var(--muted);cursor:pointer}
 .seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(30,30,80,.12)}
-.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;cursor:pointer}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:10px;cursor:pointer}
+.item .r1{display:flex;gap:12px;align-items:center}
+.item .amt-sub{font-size:11px;color:var(--muted);text-align:right}
+.item .acts{display:flex;gap:8px;margin-top:10px}
+.mini{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:7px 12px;min-height:34px;cursor:pointer}
+.mini:disabled{opacity:.5}
 .item .main{flex:1;min-width:0}
 .item .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .item .meta{font-size:12px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
@@ -113,6 +127,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .chip{display:inline-block;font:inherit;font-size:11px;font-weight:600;border-radius:99px;padding:4px 10px;border:0;margin-top:5px;cursor:pointer}
 .chip.paid{background:var(--ok-bg);color:var(--ok)}
 .chip.unpaid{background:var(--warn-bg);color:var(--warn)}
+.chip.part{background:#e8e9fb;color:#25239a}
 .empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:14px}
 .searchbar{margin-bottom:12px}
 
@@ -130,6 +145,11 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .sh-date .lbl{color:#64809a}
 .sh-date b{font-weight:700}
 .sh-date .no{margin-left:auto;margin-right:84px;display:flex;gap:14px;align-items:baseline}
+.sh-cinfo{margin-top:6px;font-size:14px;line-height:1.5;max-width:600px}
+.sh-cinfo .l{color:#64809a}
+.sh-cinfo b{font-weight:600}
+.sheet.ci .sh-name{min-height:0}
+.sheet.ci .sh-date{margin-top:40px}
 .sh-bar{margin:14px 40px 0;height:52px;background:linear-gradient(90deg,#000 0%,#3333d0 100%);color:#fff;font-weight:700;font-size:17px;display:grid;grid-template-columns:1fr 170px 190px;align-items:center}
 .sh-bar span:nth-child(1){padding-left:46px}
 .sh-bar span:nth-child(2),.sh-bar span:nth-child(3){text-align:center}
@@ -140,6 +160,12 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 .sh-total{margin:0;padding-right:84px;display:flex;justify-content:flex-end;gap:62px;align-items:baseline;font-weight:700}
 .sh-total .l{font-size:17px}
 .sh-total .v{font-size:20px}
+.sh-pay{padding-right:84px;margin-top:10px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.sh-pay div{display:flex;gap:62px;align-items:baseline;font-weight:600}
+.sh-pay .l{font-size:15px;color:#64809a}
+.sh-pay .v{font-size:17px}
+.sh-pay .rest .l{color:#1e2a3a;font-weight:700}
+.sh-pay .rest .v{font-size:19px;font-weight:700}
 .sh-bank-bar{margin:118px 40px 0;height:52px;background:linear-gradient(90deg,#000 0%,#3333d0 100%);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;padding-left:46px}
 .sh-bank{padding:34px 70px 0}
 .sh-bank .bn{font-size:23px;font-weight:700}
@@ -203,6 +229,19 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       <datalist id="clientList"></datalist>
       <p class="hint" id="clientHint" hidden></p>
 
+      <details class="more" id="coBox">
+        <summary>Data perusahaan klien (opsional)</summary>
+        <div class="inner">
+          <label for="cAddr">Alamat kantor</label>
+          <textarea id="cAddr" rows="3" maxlength="200" placeholder="Jl. …" autocomplete="off"></textarea>
+          <label for="cNpwp">NPWP</label>
+          <input type="text" id="cNpwp" maxlength="30" placeholder="00.000.000.0-000.000" autocomplete="off">
+          <label for="cRef">Nomor invoice / PO dari klien</label>
+          <input type="text" id="cRef" maxlength="40" autocomplete="off">
+          <p class="hint">Hanya dicetak di invoice kalau diisi. Alamat dan NPWP diingat untuk klien yang sama.</p>
+        </div>
+      </details>
+
       <label for="date">Tanggal</label>
       <div class="row">
         <input type="date" id="date">
@@ -219,10 +258,19 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       <div class="totalbox"><span>Total</span><strong id="totalView">Rp 0</strong></div>
       <p class="hint">Total otomatis dijumlahkan dari semua item.</p>
       <p class="hint warn" id="fitHint" hidden>Item terlalu banyak untuk satu halaman invoice. Kurangi item atau pecah menjadi dua invoice.</p>
+
+      <details class="more" id="dpBox">
+        <summary>DP / pembayaran sebagian (opsional)</summary>
+        <div class="inner">
+          <label for="dpAmt">Sudah dibayar</label>
+          <div class="money"><span>Rp</span><input type="text" id="dpAmt" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+          <p class="hint" id="dpHint"></p>
+        </div>
+      </details>
     </div>
 
     <div class="actions">
-      <button class="btn" id="btnPdf" type="button">Buat PDF</button>
+      <button class="btn red" id="btnPdf" type="button">Buat PDF</button>
       <button class="btn" id="btnImg" type="button">Buat Gambar</button>
     </div>
     <div class="actions"><button class="btn line" id="btnSave" type="button">Simpan saja</button></div>
@@ -245,12 +293,13 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     </div>
     <div class="stats">
       <div class="stat wide"><small>Total tagihan</small><strong id="stTotal">Rp 0</strong><em id="stTotalN"></em></div>
-      <div class="stat"><small>Lunas</small><strong id="stPaid">Rp 0</strong><em id="stPaidN"></em></div>
-      <div class="stat"><small>Belum dibayar</small><strong id="stUnpaid">Rp 0</strong><em id="stUnpaidN"></em></div>
+      <div class="stat"><small>Sudah diterima</small><strong id="stPaid">Rp 0</strong><em id="stPaidN"></em></div>
+      <div class="stat"><small>Sisa tagihan</small><strong id="stUnpaid">Rp 0</strong><em id="stUnpaidN"></em></div>
     </div>
     <div class="seg" id="seg">
       <button data-s="all" class="on" type="button">Semua</button>
-      <button data-s="unpaid" type="button">Belum dibayar</button>
+      <button data-s="unpaid" type="button">Belum</button>
+      <button data-s="partial" type="button">Sebagian</button>
       <button data-s="paid" type="button">Lunas</button>
     </div>
     <div class="searchbar"><input type="search" id="search" placeholder="Cari klien atau nomor (semua bulan)…"></div>
@@ -282,6 +331,8 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
         <button class="btn line" id="btnImport" type="button">Pulihkan</button>
       </div>
       <input type="file" id="fileImport" accept="application/json,.json" hidden>
+      <div class="actions" style="margin:0 0 6px"><button class="btn line" id="btnCsv" type="button">Ekspor ke Excel (CSV)</button></div>
+      <p class="hint" style="margin:0 0 12px">Tabel semua invoice untuk pembukuan. Ini bukan cadangan: tidak bisa dipulihkan ke aplikasi.</p>
       <p class="hint" id="lastBackup" style="margin:0 0 12px"></p>
       <label for="sRemind">Ingatkan saya untuk cadangan</label>
       <select id="sRemind">
@@ -319,7 +370,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
 
 <script>
 (function(){
-  const APP_VERSION = '2.4'; // samakan dengan VERSION di sw.js
+  const APP_VERSION = '2.5'; // samakan dengan VERSION di sw.js
   const $ = s => document.querySelector(s);
   const store = {
     get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
@@ -345,6 +396,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     if(!items.length) items = fallback || [{ desc:'', rate:0 }];
     return items;
   }
+  const strOf = (v, max) => String(v == null ? '' : v).slice(0, max);
   // Rapikan satu catatan invoice; data yang rusak diperbaiki atau dibuang, bukan membuat aplikasi macet.
   function normalize(i){
     if(!i || typeof i !== 'object') return null;
@@ -354,13 +406,19 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       date: /^\d{4}-\d{2}-\d{2}$/.test(i.date) ? i.date : todayISO(),
       number: i.number ? String(i.number) : '',
       items: sanitizeItems(i.items, [{ desc:String(i.desc || ''), rate:cleanRate(i.rate) }]),
-      paid: !!i.paid,
+      dp: cleanRate(i.dp),   // jumlah yang sudah dibayar (DP atau lunas)
+      clientAddr: strOf(i.clientAddr, 200), clientNpwp: strOf(i.clientNpwp, 30), clientRef: strOf(i.clientRef, 40),
       createdAt: Number(i.createdAt) || 0
     };
     n.total = sumItems(n.items);
+    if(i.paid === true && n.dp < n.total) n.dp = n.total;   // data versi lama: "Lunas" berarti dibayar penuh
     if(!n.client.trim() && n.total === 0) return null;   // catatan kosong/rusak, dibuang
     return n;
   }
+  // Status pembayaran diturunkan dari jumlah yang sudah dibayar
+  function invStatus(i){ const t = i.total || 0, d = i.dp || 0; return t > 0 && d >= t ? 'paid' : (d > 0 ? 'partial' : 'unpaid'); }
+  const received = i => Math.min(i.dp || 0, i.total || 0);
+  const outstanding = i => Math.max((i.total || 0) - (i.dp || 0), 0);
 
   /* ---------- helpers ---------- */
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -414,7 +472,8 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     if(draft.id){
       const s = invoices.find(x => x.id === draft.id);
       if(!s) return true;
-      return s.client !== draft.client.trim() || s.date !== draft.date || (s.number || '') !== (draft.number || '').trim() || JSON.stringify(s.items) !== JSON.stringify(cleanItems());
+      return s.client !== draft.client.trim() || s.date !== draft.date || (s.number || '') !== (draft.number || '').trim() || JSON.stringify(s.items) !== JSON.stringify(cleanItems())
+        || (s.dp || 0) !== (draft.dp || 0) || (s.clientAddr || '') !== (draft.clientAddr || '').trim() || (s.clientNpwp || '') !== (draft.clientNpwp || '').trim() || (s.clientRef || '') !== (draft.clientRef || '').trim();
     }
     return !!draft.client.trim() || draft.items.length > 1 || draft.items.some(it => it.rate > 0);
   }
@@ -434,21 +493,32 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     let id = s.id ? String(s.id) : null;
     const saved = id ? invoices.find(x => x.id === id) : null;
     if(id && !saved) id = null;
-    const d = { id, client:String(s.client || ''), date:/^\d{4}-\d{2}-\d{2}$/.test(s.date) ? s.date : todayISO(), dateTouched:!!s.dateTouched, number:s.number ? String(s.number) : '', numAuto:!!s.numAuto && !id, items, paid:!!s.paid };
-    if(saved && saved.client === d.client && saved.date === d.date && saved.number === d.number && JSON.stringify(saved.items) === JSON.stringify(d.items)) return false;
+    const d = { id, client:String(s.client || ''), date:/^\d{4}-\d{2}-\d{2}$/.test(s.date) ? s.date : todayISO(), dateTouched:!!s.dateTouched, number:s.number ? String(s.number) : '', numAuto:!!s.numAuto && !id, items,
+      dp:cleanRate(s.dp), clientAddr:strOf(s.clientAddr, 200), clientNpwp:strOf(s.clientNpwp, 30), clientRef:strOf(s.clientRef, 40) };
+    if(saved && saved.client === d.client && saved.date === d.date && saved.number === d.number && JSON.stringify(saved.items) === JSON.stringify(d.items)
+       && (saved.dp || 0) === d.dp && (saved.clientAddr || '') === d.clientAddr.trim() && (saved.clientNpwp || '') === d.clientNpwp.trim() && (saved.clientRef || '') === d.clientRef.trim()) return false;
     draft = d; return true;
   }
 
   /* ---------- lembar invoice ---------- */
   function sheetHTML(d, s){
-    return '<div class="sheet">' +
+    const addr = String(d.clientAddr || '').trim(), npwp = String(d.clientNpwp || '').trim(), cref = String(d.clientRef || '').trim();
+    const hasInfo = !!(addr || npwp || cref);
+    const info = hasInfo ? '<div class="sh-cinfo">' +
+      (addr ? '<div>' + esc(addr).replace(/\r?\n/g, '<br>') + '</div>' : '') +
+      (npwp ? '<div><span class="l">NPWP:</span> <b>' + esc(npwp) + '</b></div>' : '') +
+      (cref ? '<div><span class="l">No. Invoice Klien:</span> <b>' + esc(cref) + '</b></div>' : '') + '</div>' : '';
+    const total = sumItems(d.items), dp = d.dp || 0;
+    const pay = dp > 0 ? '<div class="sh-pay"><div><span class="l">' + (dp >= total ? 'Sudah Dibayar' : 'DP Dibayar') + '</span><span class="v">- ' + fmtRp(Math.min(dp, total)) + '</span></div>' +
+      '<div class="rest"><span class="l">Sisa Tagihan</span><span class="v">' + fmtRp(Math.max(total - dp, 0)) + '</span></div></div>' : '';
+    return '<div class="sheet' + (hasInfo ? ' ci' : '') + '">' +
       '<div class="sh-head"><h2>INVOICE</h2></div>' +
-      '<div class="sh-client"><div class="sh-h">CLIENT</div><div class="sh-name">' + (esc(d.client) || '&nbsp;') + '</div></div>' +
+      '<div class="sh-client"><div class="sh-h">CLIENT</div><div class="sh-name">' + (esc(d.client) || '&nbsp;') + '</div>' + info + '</div>' +
       '<div class="sh-date"><span class="lbl">Date Issued:</span><b>' + esc(fmtDate(d.date)) + '</b>' +
         (d.number ? '<span class="no"><span class="lbl">Invoice No:</span><b>' + esc(d.number) + '</b></span>' : '') + '</div>' +
       '<div class="sh-bar"><span>DESCRIPTION</span><span>RATE</span><span>SUBTOTAL</span></div>' +
       '<div class="sh-body">' + d.items.map(it => '<div class="sh-row"><b>' + esc(it.desc) + '</b><span>' + fmtRp(it.rate) + '</span><span>' + fmtRp(it.rate) + '</span></div>').join('') + '</div>' +
-      '<div class="sh-total"><span class="l">Total Amount</span><span class="v">' + fmtRp(sumItems(d.items)) + '</span></div>' +
+      '<div class="sh-total"><span class="l">Total Amount</span><span class="v">' + fmtRp(total) + '</span></div>' + pay +
       '<div class="sh-bank-bar">BANK INFO</div>' +
       '<div class="sh-bank"><div class="bn">' + esc(s.bank) + '</div><div class="ac"><span class="lbl">Account No:</span><b>' + esc(s.account) + '</b></div></div>' +
       '<div class="sh-foot"><div><span class="lbl">Instagram</span><b>: ' + esc(s.instagram) + '</b></div><div><span class="lbl">Tiktok</span><b>: ' + esc(s.tiktok) + '</b></div></div>' +
@@ -469,8 +539,9 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     box.innerHTML = sheetHTML(d, s);
     const sheet = box.firstElementChild;
     if(!sheet.offsetHeight) return true;   // sedang tersembunyi (tab lain), tidak bisa diukur
+    const base = sheet.className;   // 'sheet' atau 'sheet ci'
     let level = 0;
-    while(!sheetFits(sheet) && level < 3){ level++; sheet.className = 'sheet t' + level; }
+    while(!sheetFits(sheet) && level < 3){ level++; sheet.className = base + ' t' + level; }
     return sheetFits(sheet);
   }
   let lastFits = true;
@@ -483,7 +554,7 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   /* ---------- form ---------- */
   function newDraft(){
     const date = todayISO();
-    return { id:null, client:'', date, dateTouched:false, number:freshNumber(date), numAuto:true, items:[{ desc:settings.defaultDesc || '', rate:0 }], paid:false };
+    return { id:null, client:'', date, dateTouched:false, number:freshNumber(date), numAuto:true, items:[{ desc:settings.defaultDesc || '', rate:0 }], dp:0, clientAddr:'', clientNpwp:'', clientRef:'' };
   }
   function renderItems(){
     const box = $('#items');
@@ -496,11 +567,31 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     ).join('');
     updateTotal();
   }
-  function updateTotal(){ $('#totalView').textContent = fmtRp(sumItems(draft.items)); }
+  function updateDpHint(){
+    const t = sumItems(draft.items), dp = draft.dp || 0;
+    $('#dpHint').textContent = dp > 0 ? (dp >= t ? 'Dianggap lunas.' : 'Sisa tagihan: ' + fmtRp(t - dp)) : 'Isi kalau klien sudah membayar sebagian. Invoice akan menampilkan DP dan sisa tagihan.';
+  }
+  function updateTotal(){ $('#totalView').textContent = fmtRp(sumItems(draft.items)); updateDpHint(); }
+  // Format angka rupiah di kolom input sambil menjaga posisi kursor
+  function formatMoneyInput(el){
+    const raw = el.value;
+    const pos = el.selectionStart == null ? raw.length : el.selectionStart;
+    const digitsBefore = raw.slice(0, pos).replace(/\D/g, '').length;   // berapa digit di kiri kursor
+    const n = parseNum(raw); el.value = n ? fmtNum(n) : '';
+    if(document.activeElement === el){   // kembalikan kursor ke sebelah digit yang sama, bukan ke ujung
+      const v = el.value; let np = 0, seen = 0;
+      if(digitsBefore > 0){ for(np = 0; np < v.length; np++){ if(/\d/.test(v[np]) && ++seen === digitsBefore){ np++; break; } } }
+      try{ el.setSelectionRange(np, np); }catch(err){}
+    }
+    return n;
+  }
   function fillForm(){
     $('#client').value = draft.client;
     $('#date').value = draft.date;
     $('#invNo').value = draft.number || '';
+    $('#cAddr').value = draft.clientAddr || ''; $('#cNpwp').value = draft.clientNpwp || ''; $('#cRef').value = draft.clientRef || '';
+    $('#coBox').open = !!(draft.clientAddr || draft.clientNpwp || draft.clientRef);
+    $('#dpAmt').value = draft.dp ? fmtNum(draft.dp) : ''; $('#dpBox').open = !!draft.dp;
     $('#clientHint').hidden = true;
     renderItems();
     const editing = !!draft.id;
@@ -527,6 +618,11 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     if(!last) return;
     draft.client = last.client; $('#client').value = last.client;
     draft.items = copyItems(last.items);
+    if(!draft.clientAddr && !draft.clientNpwp){   // alamat & NPWP perusahaan ikut diingat (nomor invoice dari klien tidak)
+      draft.clientAddr = last.clientAddr || ''; draft.clientNpwp = last.clientNpwp || '';
+      $('#cAddr').value = draft.clientAddr; $('#cNpwp').value = draft.clientNpwp;
+      if(draft.clientAddr || draft.clientNpwp) $('#coBox').open = true;
+    }
     renderItems(); renderPreview();
     const h = $('#clientHint');
     h.textContent = 'Item diisi dari invoice terakhir klien ini. Ubah rate seperlunya.'; h.hidden = false;
@@ -554,20 +650,13 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     const row = e.target.closest('.it'); if(!row) return;
     const it = draft.items[+row.dataset.i]; if(!it) return;
     if(e.target.classList.contains('it-desc')) it.desc = e.target.value;
-    else if(e.target.classList.contains('it-rate')){
-      const el = e.target, raw = el.value;
-      const pos = el.selectionStart == null ? raw.length : el.selectionStart;
-      const digitsBefore = raw.slice(0, pos).replace(/\D/g, '').length;   // berapa digit di kiri kursor
-      const n = parseNum(raw); it.rate = n; el.value = n ? fmtNum(n) : '';
-      if(document.activeElement === el){   // kembalikan kursor ke sebelah digit yang sama, bukan ke ujung
-        const v = el.value; let np = 0, seen = 0;
-        if(digitsBefore > 0){ for(np = 0; np < v.length; np++){ if(/\d/.test(v[np]) && ++seen === digitsBefore){ np++; break; } } }
-        try{ el.setSelectionRange(np, np); }catch(err){}
-      }
-      updateTotal();
-    }
+    else if(e.target.classList.contains('it-rate')){ it.rate = formatMoneyInput(e.target); updateTotal(); }
     renderPreview();
   });
+  [['#cAddr', 'clientAddr'], ['#cNpwp', 'clientNpwp'], ['#cRef', 'clientRef']].forEach(p => {
+    $(p[0]).addEventListener('input', e => { draft[p[1]] = e.target.value; renderPreview(); });
+  });
+  $('#dpAmt').addEventListener('input', e => { draft.dp = formatMoneyInput(e.target); updateDpHint(); renderPreview(); });
   $('#items').addEventListener('click', e => {
     const x = e.target.closest('.x'); if(!x || draft.items.length < 2) return;
     draft.items.splice(+x.closest('.it').dataset.i, 1); renderItems(); renderPreview();
@@ -583,7 +672,8 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     if(!(await confirmDiscard())) return;
     const src = invoices.find(x => x.id === draft.id) || draft;   // yang dipakai: versi tersimpan, bukan perubahan yang dibuang
     const date = todayISO();
-    draft = { id:null, client:src.client, date, dateTouched:false, number:freshNumber(date), numAuto:true, items:copyItems(src.items), paid:false };
+    draft = { id:null, client:src.client, date, dateTouched:false, number:freshNumber(date), numAuto:true, items:copyItems(src.items),
+      dp:0, clientAddr:src.clientAddr || '', clientNpwp:src.clientNpwp || '', clientRef:'' };   // order baru: alamat & NPWP sama, DP dan nomor dari klien kosong
     fillForm(); window.scrollTo({top:0,behavior:'smooth'});
     const h = $('#clientHint'); h.textContent = 'Duplikat siap. Cek tanggal dan rate, lalu simpan.'; h.hidden = false;
   });
@@ -598,7 +688,8 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   async function save(){
     if(!validate()) return null;
     const items = cleanItems();
-    const rec = { id:draft.id, client:draft.client.trim(), date:draft.date, number:(draft.number || '').trim(), items, total:sumItems(items), paid:!!draft.paid };
+    const rec = { id:draft.id, client:draft.client.trim(), date:draft.date, number:(draft.number || '').trim(), items, total:sumItems(items),
+      dp:cleanRate(draft.dp), clientAddr:(draft.clientAddr || '').trim().slice(0, 200), clientNpwp:(draft.clientNpwp || '').trim().slice(0, 30), clientRef:(draft.clientRef || '').trim().slice(0, 40) };
     // Nama klien diganti pada invoice yang sudah tersimpan: kemungkinan besar ini order baru, jangan menimpa yang lama diam-diam.
     if(rec.id){
       const old = invoices.find(x => x.id === rec.id);
@@ -607,7 +698,10 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
           ['Simpan sebagai invoice baru', 'Ubah invoice yang lama', 'Batal']);
         if(c === 2) return null;
         if(c === 0){
-          rec.id = null; draft.id = null; draft.paid = false; rec.paid = false;
+          // order untuk klien lain: pembayaran dan data perusahaan klien lama tidak boleh ikut terbawa
+          rec.id = null; draft.id = null;
+          draft.dp = 0; rec.dp = 0;
+          draft.clientAddr = draft.clientNpwp = draft.clientRef = ''; rec.clientAddr = rec.clientNpwp = rec.clientRef = '';
           if(!draft.number || draft.number === old.number){ draft.number = freshNumber(draft.date); draft.numAuto = true; rec.number = draft.number; }
         }
       }
@@ -714,7 +808,11 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
     if(!(await resolveZeroItems())) return;
     const rec = await save(); if(!rec) return;
     if(!lastFits){ toast('Item terlalu banyak untuk satu halaman. Kurangi item atau pecah jadi dua invoice.'); return; }
-    const btn = $(kind === 'pdf' ? '#btnPdf' : '#btnImg'); btn.disabled = true; const old = btn.textContent; btn.textContent = 'Membuat…';
+    await shareRecord(kind, rec, $(kind === 'pdf' ? '#btnPdf' : '#btnImg'));
+  }
+  // Buat PDF/gambar dari satu catatan invoice lalu kirim ke menu bagikan (dipakai form dan Riwayat)
+  async function shareRecord(kind, rec, btn){
+    const old = btn ? btn.textContent : ''; if(btn){ btn.disabled = true; btn.textContent = 'Membuat…'; }
     try{
       const blob = kind === 'pdf' ? await makePdf(rec) : await makeImage(rec);
       const safe = s => s.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim();
@@ -723,8 +821,27 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       if(r === 'downloaded') toast(kind === 'pdf' ? 'PDF dibuat' : 'Gambar dibuat');
     }catch(e){
       toast(e && e.message === 'fit' ? 'Item terlalu banyak untuk satu halaman.' : 'Gagal membuat ' + (kind === 'pdf' ? 'PDF' : 'gambar'));
-    }finally{ btn.disabled = false; btn.textContent = old; }
+    }finally{ if(btn){ btn.disabled = false; btn.textContent = old; } }
   }
+  // Ekspor semua invoice jadi tabel CSV (pemisah titik koma, supaya terbuka rapi di Excel berbahasa Indonesia)
+  function csvCell(v){
+    let s = String(v == null ? '' : v);
+    if(/^[=+\-@\t\r]/.test(s)) s = "'" + s;   // cegah sel dibaca sebagai rumus
+    return /[;"\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  async function exportCsv(){
+    if(!invoices.length){ toast('Belum ada invoice untuk diekspor'); return; }
+    const head = ['Nomor', 'Tanggal', 'Klien', 'Alamat Klien', 'NPWP Klien', 'No. Invoice Klien', 'Item', 'Total', 'Dibayar', 'Sisa', 'Status'];
+    const label = { paid:'Lunas', partial:'Sebagian', unpaid:'Belum dibayar' };
+    const rows = invoices.slice().sort(byDateDesc).map(i => [
+      i.number, i.date, i.client, (i.clientAddr || '').replace(/\s*\r?\n\s*/g, ', '), i.clientNpwp, i.clientRef,
+      i.items.map(it => it.desc + ' (' + it.rate + ')').join(' + '), i.total, received(i), outstanding(i), label[invStatus(i)]
+    ]);
+    const csv = '﻿' + [head].concat(rows).map(r => r.map(csvCell).join(';')).join('\r\n');
+    const r = await deliverFile(new Blob([csv], { type:'text/csv;charset=utf-8' }), 'invoice-endorse-' + todayISO() + '.csv', 'text/csv');
+    if(r === 'downloaded') toast('File CSV dibuat');
+  }
+  $('#btnCsv').addEventListener('click', exportCsv);
   $('#btnPdf').addEventListener('click', () => exportFile('pdf'));
   $('#btnImg').addEventListener('click', () => exportFile('img'));
   window.__makePdf = makePdf; window.__makeImage = makeImage; // untuk pengujian
@@ -738,17 +855,17 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   function renderHistory(){
     const q = $('#search').value.trim().toLowerCase();
     const inMonth = invoices.filter(i => hMonth === 'all' || (i.date||'').slice(0,7) === hMonth);
-    const paid = inMonth.filter(i => i.paid), unpaid = inMonth.filter(i => !i.paid);
-    const sum = a => a.reduce((s,i) => s + i.total, 0);
-    $('#stTotal').textContent = fmtRp(sum(inMonth)); $('#stTotalN').textContent = inMonth.length + ' invoice';
-    $('#stPaid').textContent = fmtRp(sum(paid)); $('#stPaidN').textContent = paid.length + ' invoice';
-    $('#stUnpaid').textContent = fmtRp(sum(unpaid)); $('#stUnpaidN').textContent = unpaid.length + ' invoice';
+    const full = inMonth.filter(i => invStatus(i) === 'paid'), part = inMonth.filter(i => invStatus(i) === 'partial'), open = inMonth.filter(i => invStatus(i) !== 'paid');
+    const sum = (a, fn) => a.reduce((s, i) => s + fn(i), 0);
+    $('#stTotal').textContent = fmtRp(sum(inMonth, i => i.total)); $('#stTotalN').textContent = inMonth.length + ' invoice';
+    $('#stPaid').textContent = fmtRp(sum(inMonth, received)); $('#stPaidN').textContent = full.length + ' lunas' + (part.length ? ', ' + part.length + ' sebagian' : '');
+    $('#stUnpaid').textContent = fmtRp(sum(inMonth, outstanding)); $('#stUnpaidN').textContent = open.length + ' invoice';
     $('#mLabel').textContent = monthLabel(hMonth);
     $('#mAll').textContent = hMonth === 'all' ? 'Bulan ini' : 'Semua';
     document.querySelectorAll('#seg button').forEach(b => b.classList.toggle('on', b.dataset.s === hStatus));
 
-    let rows = q ? invoices.filter(i => i.client.toLowerCase().includes(q) || (i.number || '').toLowerCase().includes(q)) : inMonth;
-    if(hStatus === 'paid') rows = rows.filter(i => i.paid); else if(hStatus === 'unpaid') rows = rows.filter(i => !i.paid);
+    let rows = q ? invoices.filter(i => i.client.toLowerCase().includes(q) || (i.number || '').toLowerCase().includes(q) || (i.clientRef || '').toLowerCase().includes(q)) : inMonth;
+    if(hStatus !== 'all') rows = rows.filter(i => invStatus(i) === hStatus);
     rows = rows.slice().sort(byDateDesc);
 
     const el = $('#list');
@@ -757,10 +874,12 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
       return;
     }
     el.innerHTML = (q ? '<div class="sec-title">Hasil pencarian di semua bulan</div>' : '') + rows.map(i =>
-      '<div class="item" data-id="' + esc(i.id) + '"><div class="main"><div class="nm">' + esc(i.client) + '</div>' +
+      '<div class="item" data-id="' + esc(i.id) + '"><div class="r1"><div class="main"><div class="nm">' + esc(i.client) + '</div>' +
       '<div class="meta">' + esc(fmtDate(i.date)) + (i.number ? ' · ' + esc(i.number) : '') + ' · ' + esc(i.items.map(it => it.desc).join(' + ')) + '</div></div>' +
       '<div><div class="amt">' + fmtRp(i.total) + '</div>' +
-      '<div style="text-align:right"><button class="chip ' + (i.paid ? 'paid' : 'unpaid') + '" data-toggle="' + esc(i.id) + '" type="button">' + (i.paid ? 'Lunas' : 'Belum dibayar') + '</button></div></div></div>'
+      (invStatus(i) === 'partial' ? '<div class="amt-sub">sisa ' + fmtRp(outstanding(i)) + '</div>' : '') +
+      '<div style="text-align:right"><button class="chip ' + ({ paid:'paid', partial:'part', unpaid:'unpaid' })[invStatus(i)] + '" data-toggle="' + esc(i.id) + '" type="button">' + ({ paid:'Lunas', partial:'Sebagian', unpaid:'Belum dibayar' })[invStatus(i)] + '</button></div></div></div>' +
+      '<div class="acts"><button class="mini" data-share="pdf" data-id="' + esc(i.id) + '" type="button">Bagikan PDF</button><button class="mini" data-share="img" data-id="' + esc(i.id) + '" type="button">Bagikan Gambar</button></div></div>'
     ).join('');
   }
   $('#search').addEventListener('input', renderHistory);
@@ -769,15 +888,20 @@ input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;borde
   $('#mAll').addEventListener('click', () => { hMonth = hMonth === 'all' ? curMonth() : 'all'; renderHistory(); });
   $('#seg').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; hStatus = b.dataset.s; renderHistory(); });
   $('#list').addEventListener('click', async e => {
+    const sh = e.target.closest('[data-share]');
+    if(sh){ const r = invoices.find(x => x.id === sh.dataset.id); if(r) shareRecord(sh.dataset.share === 'pdf' ? 'pdf' : 'img', r, sh); return; }
     const tg = e.target.closest('[data-toggle]');
     if(tg){
       const rec = invoices.find(x => x.id === tg.dataset.toggle);
       if(rec){
-        const next = rec.paid ? 'Belum dibayar' : 'Lunas';
-        choose('Ubah status "' + rec.client + '" (' + fmtRp(rec.total) + ') menjadi ' + next + '?', ['Ya, jadikan ' + next, 'Batal']).then(c => {
+        const st = invStatus(rec), isPaid = st === 'paid';
+        const text = isPaid
+          ? 'Ubah "' + rec.client + '" (' + fmtRp(rec.total) + ') dari Lunas menjadi Belum dibayar? Catatan pembayaran (DP) ikut dikosongkan.'
+          : 'Tandai "' + rec.client + '" (' + fmtRp(rec.total) + ') sebagai Lunas?' + (st === 'partial' ? ' Sisa ' + fmtRp(outstanding(rec)) + ' dianggap sudah dibayar.' : '');
+        choose(text, [isPaid ? 'Ya, jadikan Belum dibayar' : 'Ya, tandai Lunas', 'Batal']).then(c => {
           if(c !== 0) return;
-          rec.paid = !rec.paid; persist(); renderHistory();
-          if(draft.id === rec.id){ draft.paid = rec.paid; saveDraft(); }
+          rec.dp = isPaid ? 0 : rec.total; persist(); renderHistory();
+          if(draft.id === rec.id){ draft.dp = rec.dp; $('#dpAmt').value = rec.dp ? fmtNum(rec.dp) : ''; updateDpHint(); saveDraft(); }
         });
       }
       return;
