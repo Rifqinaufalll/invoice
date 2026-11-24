@@ -64,7 +64,7 @@ label:first-of-type{margin-top:0}
 label .opt{font-weight:400;color:var(--muted)}
 label.check{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);margin:14px 0 0}
 label.check input{width:20px;height:20px;accent-color:var(--brand);flex:0 0 auto}
-input[type=text],input[type=date],input[type=search],select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:46px;appearance:none;-webkit-appearance:none}
+input[type=text],input[type=password],input[type=date],input[type=search],select{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:12px;padding:12px 13px;min-height:46px;appearance:none;-webkit-appearance:none}
 select{background-image:linear-gradient(45deg,transparent 50%,#64748b 50%),linear-gradient(135deg,#64748b 50%,transparent 50%);background-position:calc(100% - 19px) 50%,calc(100% - 14px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
 input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:transparent}
 .row{display:flex;gap:10px;align-items:flex-end}
@@ -180,7 +180,7 @@ details.more summary b{color:var(--ink);font-weight:600}
 
 /* ===== lembar invoice (ukuran A4: 794 x 1123) ===== */
 .sheet{width:794px;height:1123px;background:#fff;position:relative;font-family:'Lexend',system-ui,sans-serif;color:#1e2a3a;overflow:hidden}
-.sh-head{height:185px;background:linear-gradient(90deg,#3333d0 0%,#000 100%);display:flex;align-items:center;padding-left:80px}
+.sh-head{height:185px;background:linear-gradient(90deg,var(--g1,#3333d0) 0%,var(--g2,#000) 100%);display:flex;align-items:center;padding-left:80px}
 .sh-head h2{margin:0;color:#fff;font-size:48px;font-weight:700;letter-spacing:.5px}
 .sh-client{padding:34px 76px 0}
 .sh-h{font-size:26px;font-weight:700}
@@ -194,7 +194,7 @@ details.more summary b{color:var(--ink);font-weight:600}
 .sh-cinfo b{font-weight:600}
 .sheet.ci .sh-name{min-height:0}
 .sheet.ci .sh-date{margin-top:40px}
-.sh-bar{margin:14px 40px 0;height:52px;background:linear-gradient(90deg,#000 0%,#3333d0 100%);color:#fff;font-weight:700;font-size:17px;display:grid;grid-template-columns:1fr 170px 190px;align-items:center}
+.sh-bar{margin:14px 40px 0;height:52px;background:linear-gradient(90deg,var(--g2,#000) 0%,var(--g1,#3333d0) 100%);color:#fff;font-weight:700;font-size:17px;display:grid;grid-template-columns:1fr 170px 190px;align-items:center}
 .sh-bar span:nth-child(1){padding-left:46px}
 .sh-bar span:nth-child(2),.sh-bar span:nth-child(3){text-align:center}
 .sh-body{min-height:190px;padding-top:36px}
@@ -210,7 +210,7 @@ details.more summary b{color:var(--ink);font-weight:600}
 .sh-pay .v{font-size:17px}
 .sh-pay .rest .l{color:#1e2a3a;font-weight:700}
 .sh-pay .rest .v{font-size:19px;font-weight:700}
-.sh-bank-bar{margin:118px 40px 0;height:52px;background:linear-gradient(90deg,#000 0%,#3333d0 100%);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;padding-left:46px}
+.sh-bank-bar{margin:118px 40px 0;height:52px;background:linear-gradient(90deg,var(--g2,#000) 0%,var(--g1,#3333d0) 100%);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;padding-left:46px}
 .sh-bank{padding:34px 70px 0}
 .sh-bank .bn{font-size:23px;font-weight:700}
 .sh-bank .ac{margin-top:2px;font-size:19px}
@@ -219,6 +219,7 @@ details.more summary b{color:var(--ink);font-weight:600}
 .sh-foot{position:absolute;left:56px;right:70px;bottom:46px;display:flex;justify-content:space-between;font-size:16px}
 .sh-foot .lbl{color:#64809a;margin-right:8px}
 .sh-foot b{font-weight:700}
+.sh-bank.multi .pm+.pm{margin-top:12px}.sh-bank.multi .bn{font-size:20px}.sh-bank.multi .ac{font-size:16px}
 /* tata letak makin rapat kalau item banyak (dipilih otomatis oleh aplikasi) */
 .sheet.t1 .sh-head{height:140px}.sheet.t1 .sh-head h2{font-size:42px}
 .sheet.t1 .sh-client{padding-top:24px}.sheet.t1 .sh-name{min-height:30px;margin-top:8px}
@@ -238,6 +239,32 @@ details.more summary b{color:var(--ink);font-weight:600}
 .sheet.t3 .sh-body{min-height:0;padding-top:10px}
 .sheet.t3 .sh-row{margin-bottom:3px;font-size:13px}
 .sheet.t3 .sh-bank-bar{margin-top:14px}.sheet.t3 .sh-bank{padding-top:12px}
+/* item cepat, batalkan hapus, metode pembayaran, nama mirip */
+.qrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.qchip{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:99px;padding:7px 12px;min-height:34px;cursor:pointer}
+.undo{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--toast-bg);color:var(--toast-ink);font-size:14px;padding:6px 8px 6px 16px;border-radius:12px;z-index:21;display:flex;align-items:center;gap:10px;max-width:92vw}
+.undo[hidden]{display:none}
+.undo button{font:inherit;font-weight:700;font-size:14px;background:none;border:0;color:var(--toast-ink);text-decoration:underline;padding:10px 12px;min-height:40px;cursor:pointer}
+.linkbtn{font:inherit;font-size:12px;font-weight:700;background:none;border:0;padding:4px 2px;color:var(--brand);text-decoration:underline;cursor:pointer}
+.mrow2{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;background:var(--soft)}
+.mrow2 input+input{margin-top:8px}
+.mrow2 .row{align-items:center}
+.mrow2 .x{flex:0 0 auto}
+.paychk{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink);margin:10px 0 0;font-weight:500}
+.paychk input{width:20px;height:20px;accent-color:var(--brand);flex:0 0 auto;margin-top:1px}
+.paychk small{display:block;color:var(--muted);font-size:12px;font-weight:400;word-break:break-word}
+.btn[hidden]{display:none}
+/* pilihan warna invoice */
+.swrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.swb{width:38px;height:38px;border-radius:50%;border:0;padding:0;cursor:pointer;position:relative;background:linear-gradient(135deg,var(--g1),var(--g2));box-shadow:0 0 0 1px var(--line)}
+.swb.on{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--brand)}
+.swb.locked{opacity:.6}
+.swb .lk{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1}
+.swb.cust{background:conic-gradient(#e11d48,#f59e0b,#16a34a,#0ea5e9,#a855f7,#e11d48)}
+.swb.cust.set{background:linear-gradient(135deg,var(--g1),var(--g2))}
+.swb.cust .pl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6);line-height:1}
+.swcolor{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.swnote{font-size:12px;color:var(--muted);margin:10px 0 0}
 </style>
 </head>
 <body>
@@ -272,6 +299,7 @@ details.more summary b{color:var(--ink);font-weight:600}
       <input type="text" id="client" list="clientList" placeholder="mis. Warung Sop Pak Bayu" autocomplete="off" enterkeyhint="next">
       <datalist id="clientList"></datalist>
       <p class="hint" id="clientHint" hidden></p>
+      <p class="hint" id="simHint" hidden><span id="simText"></span> <button type="button" class="linkbtn" id="simUse">Pakai nama itu</button></p>
 
       <details class="more" id="coBox">
         <summary>Data perusahaan klien (opsional)</summary>
@@ -301,10 +329,19 @@ details.more summary b{color:var(--ink);font-weight:600}
         </div>
       </details>
 
+      <details class="more" id="colorBox">
+        <summary>Warna invoice: <b id="colorSummary"></b></summary>
+        <div class="inner">
+          <div class="swrow" id="swCreate"></div>
+          <p class="swnote" id="swNoteCreate"></p>
+        </div>
+      </details>
+
       <label>Item</label>
       <div id="items"></div>
       <datalist id="descList"></datalist>
       <button class="btn ghost sm" id="btnAddItem" type="button">+ Tambah item</button>
+      <div class="qrow" id="quickRow" hidden></div>
       <div class="totalbox"><span>Total</span><strong id="totalView">Rp 0</strong></div>
       <p class="hint">Total otomatis dijumlahkan dari semua item.</p>
       <p class="hint warn" id="fitHint" hidden>Item terlalu banyak untuk satu halaman invoice. Kurangi item atau pecah menjadi dua invoice.</p>
@@ -317,15 +354,23 @@ details.more summary b{color:var(--ink);font-weight:600}
           <p class="hint" id="dpHint"></p>
         </div>
       </details>
+
+      <details class="more" id="payBox">
+        <summary>Metode pembayaran: <b id="paySummary"></b></summary>
+        <div class="inner">
+          <div id="payList"></div>
+          <p class="hint" id="payHint"></p>
+        </div>
+      </details>
     </div>
 
     <div class="actions">
       <button class="btn red" id="btnPdf" type="button">Buat PDF</button>
       <button class="btn" id="btnImg" type="button">Buat Gambar</button>
     </div>
-    <div class="actions"><button class="btn green" id="btnSave" type="button">Simpan saja</button></div>
+    <div class="actions"><button class="btn green" id="btnSave" type="button">Simpan</button></div>
     <div class="actions" id="editRow" style="display:none">
-      <button class="btn ghost sm" id="btnDup" type="button">Duplikat untuk order baru</button>
+      <button class="btn ghost sm" id="btnDup" type="button">Salin jadi invoice baru</button>
       <button class="btn danger sm" id="btnDelete" type="button">Hapus</button>
     </div>
 
@@ -399,8 +444,27 @@ details.more summary b{color:var(--ink);font-weight:600}
       <input type="text" id="sTt">
       <label for="sDesc">Deskripsi bawaan</label>
       <input type="text" id="sDesc">
+      <details class="more" id="mBox">
+        <summary>Metode pembayaran lain (opsional)</summary>
+        <div class="inner">
+          <div id="sMethods"></div>
+          <button class="btn ghost sm" id="btnAddMethod" type="button">+ Tambah metode</button>
+          <p class="hint">Bank / e-wallet tambahan. Di tab Buat kamu memilih metode mana yang dicetak di tiap invoice. Yang di atas (Bank dan rekening) selalu menjadi metode utama.</p>
+        </div>
+      </details>
+      <label for="sQuick">Item cepat</label>
+      <textarea id="sQuick" rows="3" maxlength="600" placeholder="Satu item per baris" autocomplete="off"></textarea>
+      <p class="hint">Jadi tombol di bawah "+ Tambah item" (harga dikosongkan, kamu isi sendiri). Owning Content selalu ada.</p>
       <label class="check"><input type="checkbox" id="sAuto"> Isi nomor invoice otomatis</label>
       <p class="hint">Tersimpan otomatis di perangkat ini.</p>
+    </div>
+    <div class="card">
+      <h2>Warna invoice</h2>
+      <label>Warna bawaan untuk invoice baru</label>
+      <div class="swrow" id="swSettings"></div>
+      <p class="swnote" id="swNoteSettings"></p>
+      <div class="actions" style="margin:10px 0 0"><button class="btn ghost sm" id="btnRelock" type="button" hidden>Kunci biru lagi</button></div>
+      <p class="hint">Warna juga bisa diganti per invoice di tab Buat. Invoice yang sudah dibuat tidak berubah.</p>
     </div>
     <div class="card">
       <h2>Tampilan</h2>
@@ -459,11 +523,13 @@ details.more summary b{color:var(--ink);font-weight:600}
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Pengaturan</button>
 </nav>
 <div class="modal" id="modal" hidden><div class="modal-box" role="dialog" aria-modal="true"><p id="modalText"></p><div class="modal-acts" id="modalActs"></div></div></div>
+<div class="undo" id="undoBar" hidden><span id="undoText">Invoice dihapus</span><button type="button" id="undoBtn">Batalkan</button></div>
+<div class="modal" id="codeModal" hidden><div class="modal-box" role="dialog" aria-modal="true"><p id="codeText"></p><input type="password" id="codeInp" autocomplete="off" autocapitalize="off" placeholder="Kode" aria-label="Kode"><p class="hint warn" id="codeErr" hidden>Kode salah</p><div class="modal-acts" style="margin-top:12px"><button class="btn" id="codeOk" type="button">Buka kunci</button><button class="btn line" id="codeNo" type="button">Batal</button></div></div></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
 (function(){
-  const APP_VERSION = '2.7'; // samakan dengan VERSION di sw.js
+  const APP_VERSION = '2.9'; // samakan dengan VERSION di sw.js
   const $ = s => document.querySelector(s);
   const store = {
     get(k, def){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }catch(e){ return def; } },
@@ -471,7 +537,7 @@ details.more summary b{color:var(--ink);font-weight:600}
   };
   const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const MONTH_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  const BASE_SETTINGS = { bank:'', account:'', instagram:'', tiktok:'', defaultDesc:'Visit Kedai', autoNumber:true, backupDays:20, theme:'auto' };
+  const BASE_SETTINGS = { bank:'', account:'', instagram:'', tiktok:'', defaultDesc:'Visit Kedai', autoNumber:true, backupDays:20, theme:'auto', color:'biru', unlock:'', methods:[], quick:[] };
   const DEFAULT_SETTINGS = Object.assign({}, BASE_SETTINGS, window.APP_DEFAULTS || {});
 
   let settings = Object.assign({}, DEFAULT_SETTINGS, store.get('inv-settings', {}));
@@ -479,6 +545,79 @@ details.more summary b{color:var(--ink);font-weight:600}
   if(!Array.isArray(invoices)) invoices = [];
   let meta = Object.assign({ lastBackup:0, snoozeUntil:0 }, store.get('inv-meta', {}));
   if(!meta.counters || typeof meta.counters !== 'object') meta.counters = {};
+
+  /* ---------- warna invoice ---------- */
+  // Kunci ini hanya kunci sopan: semua kode aplikasi terbuka, jadi orang yang paham kode bisa menembusnya.
+  const LOCK_HASH = 'daccf2eb0f8387589216d26b37893470dab0a86f03be17619234d74aa546101e', LOCK_SALT = 'invoice-lock:v1', LOCK_ITER = 200000, LOCK_OWNER = 'Anep';
+  const PRESETS = [
+    { id:'biru',  name:'Biru',  g1:'#3333d0', g2:'#000000', lock:true },
+    { id:'hitam', name:'Hitam', g1:'#52525b', g2:'#000000' },
+    { id:'hijau', name:'Hijau', g1:'#0f7a43', g2:'#02140a' },
+    { id:'marun', name:'Marun', g1:'#a61e3a', g2:'#12030a' },
+    { id:'ungu',  name:'Ungu',  g1:'#8e24aa', g2:'#14061a' },
+    { id:'emas',  name:'Emas',  g1:'#955810', g2:'#1c1005' }
+  ];
+  const HEX = /^#[0-9a-f]{6}$/i;
+  const isUnlocked = () => settings.unlock === LOCK_HASH;
+  const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const rgbHex = r => '#' + r.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+  function rgbHsl(r){
+    const R = r[0] / 255, G = r[1] / 255, B = r[2] / 255, mx = Math.max(R, G, B), mn = Math.min(R, G, B), l = (mx + mn) / 2, d = mx - mn;
+    let h = 0, s = 0;
+    if(d){ s = d / (1 - Math.abs(2 * l - 1)); h = mx === R ? ((G - B) / d) % 6 : (mx === G ? (B - R) / d + 2 : (R - G) / d + 4); h *= 60; if(h < 0) h += 360; }
+    return [h, s, l];
+  }
+  function hslRgb(h, s, l){
+    const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+    const r = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+    return r.map(v => (v + m) * 255);
+  }
+  function lumOf(r){ const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(r[0]) + 0.7152 * f(r[1]) + 0.0722 * f(r[2]); }
+  // Warna kustom: gelapkan secukupnya supaya tulisan putih di header tetap terbaca, ujung satunya hampir hitam
+  function customPair(hex){
+    const hsl = rgbHsl(hexRgb(hex)); let l = hsl[2], rgb = hslRgb(hsl[0], hsl[1], l);
+    while(1.05 / (lumOf(rgb) + 0.05) < 4.6 && l > 0.05){ l -= 0.02; rgb = hslRgb(hsl[0], hsl[1], l); }
+    return { g1:rgbHex(rgb), g2:rgbHex(hslRgb(hsl[0], Math.min(hsl[1], 0.6), 0.05)) };
+  }
+  // Mirip Biru yang dikunci? (rona biru-indigo yang cukup pekat)
+  function blueish(hex){
+    return [hex, customPair(hex).g1].some(x => { const c = rgbHsl(hexRgb(x)); return c[0] >= 210 && c[0] <= 260 && c[1] >= 0.3 && c[2] >= 0.1 && c[2] <= 0.85; });
+  }
+  function colorInfo(c){
+    const p = PRESETS.find(x => x.id === c);
+    if(p) return { id:p.id, name:p.name, g1:p.g1, g2:p.g2, lock:!!p.lock };
+    if(HEX.test(c || '')){ const q = customPair(c); return { id:c.toLowerCase(), name:'Kustom', g1:q.g1, g2:q.g2, lock:blueish(c) }; }
+    return colorInfo('biru');
+  }
+  const validColor = c => PRESETS.some(p => p.id === c) ? c : (HEX.test(c || '') ? c.toLowerCase() : null);
+  const colorAllowed = c => !colorInfo(c).lock || isUnlocked();
+  function defaultColor(){ const c = validColor(settings.color); return c && colorAllowed(c) ? c : 'hitam'; }
+  async function codeHash(code){
+    const enc = new TextEncoder();
+    const key = await crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name:'PBKDF2', hash:'SHA-256', salt:enc.encode(LOCK_SALT), iterations:LOCK_ITER }, key, 256);
+    return Array.from(new Uint8Array(bits)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  let codeFails = 0, codeWaitUntil = 0;
+  function askCode(){
+    return new Promise(resolve => {
+      const m = $('#codeModal'), inp = $('#codeInp'), err = $('#codeErr'), ok = $('#codeOk'), no = $('#codeNo');
+      $('#codeText').textContent = 'Warna Biru dikunci oleh ' + LOCK_OWNER + '. Masukkan kode untuk membuka.';
+      inp.value = ''; err.hidden = true; m.hidden = false; setTimeout(() => inp.focus(), 60);
+      const close = v => { m.hidden = true; ok.onclick = no.onclick = inp.onkeydown = m.onclick = null; resolve(v); };
+      const tryCode = async () => {
+        if(Date.now() < codeWaitUntil){ err.textContent = 'Terlalu banyak percobaan. Coba lagi sebentar lagi.'; err.hidden = false; return; }
+        ok.disabled = true; let good = false;
+        try{ good = (await codeHash(inp.value.trim())) === LOCK_HASH; }
+        catch(e){ ok.disabled = false; err.textContent = 'Kunci tidak bisa dibuka di sini (perlu koneksi aman).'; err.hidden = false; return; }
+        ok.disabled = false;
+        if(good){ codeFails = 0; settings.unlock = LOCK_HASH; store.set('inv-settings', settings); close(true); }
+        else { if(++codeFails >= 5){ codeFails = 0; codeWaitUntil = Date.now() + 30000; } err.textContent = 'Kode salah'; err.hidden = false; inp.select(); }
+      };
+      ok.onclick = tryCode; no.onclick = () => close(false); m.onclick = e => { if(e.target === m) close(false); };
+      inp.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); tryCode(); } };
+    });
+  }
   let draft;
   let hMonth, hStatus = 'all';
 
@@ -490,6 +629,11 @@ details.more summary b{color:var(--ink);font-weight:600}
     return items;
   }
   const strOf = (v, max) => String(v == null ? '' : v).slice(0, max);
+  // Metode pembayaran: daftar {bank, account}; baris kosong dibuang
+  const cleanMethods = arr => Array.isArray(arr) ? arr.filter(m => m && typeof m === 'object').map(m => ({ bank:strOf(m.bank, 60), account:strOf(m.account, 80) })).filter(m => m.bank.trim() || m.account.trim()).slice(0, 5) : [];
+  const extraMethods = () => cleanMethods(settings.methods);
+  const quickItems = () => (Array.isArray(settings.quick) ? settings.quick : []).map(v => String(v == null ? '' : v).trim().slice(0, 60)).filter((v, i, a) => v && a.findIndex(x => x.toLowerCase() === v.toLowerCase()) === i).slice(0, 12);
+  const mKey = m => String(m.bank || '').trim().toLowerCase() + '|' + String(m.account || '').trim().toLowerCase();
   // Rapikan satu catatan invoice; data yang rusak diperbaiki atau dibuang, bukan membuat aplikasi macet.
   function normalize(i){
     if(!i || typeof i !== 'object') return null;
@@ -501,9 +645,11 @@ details.more summary b{color:var(--ink);font-weight:600}
       items: sanitizeItems(i.items, [{ desc:String(i.desc || ''), rate:cleanRate(i.rate) }]),
       dp: cleanRate(i.dp),   // jumlah yang sudah dibayar (DP atau lunas)
       clientAddr: strOf(i.clientAddr, 200), clientNpwp: strOf(i.clientNpwp, 30), clientRef: strOf(i.clientRef, 40),
+      color: validColor(i.color) || 'biru',   // invoice lama (tanpa warna) selalu biru
       createdAt: Number(i.createdAt) || 0
     };
     n.total = sumItems(n.items);
+    const pay = cleanMethods(i.pay); if(pay.length) n.pay = pay;   // tanpa 'pay': memakai metode utama dari Pengaturan
     if(i.paid === true && n.dp < n.total) n.dp = n.total;   // data versi lama: "Lunas" berarti dibayar penuh
     if(!n.client.trim() && n.total === 0) return null;   // catatan kosong/rusak, dibuang
     return n;
@@ -566,7 +712,7 @@ details.more summary b{color:var(--ink);font-weight:600}
       const s = invoices.find(x => x.id === draft.id);
       if(!s) return true;
       return s.client !== draft.client.trim() || s.date !== draft.date || (s.number || '') !== (draft.number || '').trim() || JSON.stringify(s.items) !== JSON.stringify(cleanItems())
-        || (s.dp || 0) !== (draft.dp || 0) || (s.clientAddr || '') !== (draft.clientAddr || '').trim() || (s.clientNpwp || '') !== (draft.clientNpwp || '').trim() || (s.clientRef || '') !== (draft.clientRef || '').trim();
+        || JSON.stringify(s.pay || null) !== JSON.stringify((draft.pay && draft.pay.length) ? draft.pay : null) || (s.color || 'biru') !== (draft.color || 'biru') || (s.dp || 0) !== (draft.dp || 0) || (s.clientAddr || '') !== (draft.clientAddr || '').trim() || (s.clientNpwp || '') !== (draft.clientNpwp || '').trim() || (s.clientRef || '') !== (draft.clientRef || '').trim();
     }
     return !!draft.client.trim() || draft.items.length > 1 || draft.items.some(it => it.rate > 0);
   }
@@ -587,8 +733,8 @@ details.more summary b{color:var(--ink);font-weight:600}
     const saved = id ? invoices.find(x => x.id === id) : null;
     if(id && !saved) id = null;
     const d = { id, client:String(s.client || ''), date:/^\d{4}-\d{2}-\d{2}$/.test(s.date) ? s.date : todayISO(), dateTouched:!!s.dateTouched, number:s.number ? String(s.number) : '', numAuto:!!s.numAuto && !id, items,
-      dp:cleanRate(s.dp), clientAddr:strOf(s.clientAddr, 200), clientNpwp:strOf(s.clientNpwp, 30), clientRef:strOf(s.clientRef, 40) };
-    if(saved && saved.client === d.client && saved.date === d.date && saved.number === d.number && JSON.stringify(saved.items) === JSON.stringify(d.items)
+      dp:cleanRate(s.dp), clientAddr:strOf(s.clientAddr, 200), clientNpwp:strOf(s.clientNpwp, 30), clientRef:strOf(s.clientRef, 40), color:validColor(s.color) || defaultColor(), pay:cleanMethods(s.pay).length ? cleanMethods(s.pay) : null };
+    if(saved && JSON.stringify(saved.pay || null) === JSON.stringify(d.pay) && (saved.color || 'biru') === d.color && saved.client === d.client && saved.date === d.date && saved.number === d.number && JSON.stringify(saved.items) === JSON.stringify(d.items)
        && (saved.dp || 0) === d.dp && (saved.clientAddr || '') === d.clientAddr.trim() && (saved.clientNpwp || '') === d.clientNpwp.trim() && (saved.clientRef || '') === d.clientRef.trim()) return false;
     draft = d; return true;
   }
@@ -604,7 +750,9 @@ details.more summary b{color:var(--ink);font-weight:600}
     const total = sumItems(d.items), dp = d.dp || 0;
     const pay = dp > 0 ? '<div class="sh-pay"><div><span class="l">' + (dp >= total ? 'Sudah Dibayar' : 'DP Dibayar') + '</span><span class="v">- ' + fmtRp(Math.min(dp, total)) + '</span></div>' +
       '<div class="rest"><span class="l">Sisa Tagihan</span><span class="v">' + fmtRp(Math.max(total - dp, 0)) + '</span></div></div>' : '';
-    return '<div class="sheet' + (hasInfo ? ' ci' : '') + '">' +
+    const ci = colorInfo(d.color);
+    const meths = (Array.isArray(d.pay) && d.pay.length) ? d.pay : [{ bank:s.bank, account:s.account }], multi = meths.length > 1;
+    return '<div class="sheet' + (hasInfo ? ' ci' : '') + '" style="--g1:' + ci.g1 + ';--g2:' + ci.g2 + '">' +
       '<div class="sh-head"><h2>INVOICE</h2></div>' +
       '<div class="sh-client"><div class="sh-h">CLIENT</div><div class="sh-name">' + (esc(d.client) || '&nbsp;') + '</div>' + info + '</div>' +
       '<div class="sh-date"><span class="lbl">Date Issued:</span><b>' + esc(fmtDate(d.date)) + '</b>' +
@@ -612,8 +760,8 @@ details.more summary b{color:var(--ink);font-weight:600}
       '<div class="sh-bar"><span>DESCRIPTION</span><span>RATE</span><span>SUBTOTAL</span></div>' +
       '<div class="sh-body">' + d.items.map(it => '<div class="sh-row"><b>' + esc(it.desc) + '</b><span>' + fmtRp(it.rate) + '</span><span>' + fmtRp(it.rate) + '</span></div>').join('') + '</div>' +
       '<div class="sh-total"><span class="l">Total Amount</span><span class="v">' + fmtRp(total) + '</span></div>' + pay +
-      '<div class="sh-bank-bar">BANK INFO</div>' +
-      '<div class="sh-bank"><div class="bn">' + esc(s.bank) + '</div><div class="ac"><span class="lbl">Account No:</span><b>' + esc(s.account) + '</b></div></div>' +
+      '<div class="sh-bank-bar">' + ((Array.isArray(d.pay) && d.pay.length) ? 'PAYMENT INFO' : 'BANK INFO') + '</div>' +
+      '<div class="sh-bank' + (multi ? ' multi' : '') + '">' + meths.map(m => '<div class="pm"><div class="bn">' + esc(m.bank) + '</div><div class="ac"><span class="lbl">Account No:</span><b>' + esc(m.account) + '</b></div></div>').join('') + '</div>' +
       '<div class="sh-foot"><div><span class="lbl">Instagram</span><b>: ' + esc(s.instagram) + '</b></div><div><span class="lbl">Tiktok</span><b>: ' + esc(s.tiktok) + '</b></div></div>' +
     '</div>';
   }
@@ -648,7 +796,7 @@ details.more summary b{color:var(--ink);font-weight:600}
   /* ---------- form ---------- */
   function newDraft(){
     const date = todayISO();
-    return { id:null, client:'', date, dateTouched:false, number:freshNumber(date), numAuto:true, items:[{ desc:settings.defaultDesc || '', rate:0 }], dp:0, clientAddr:'', clientNpwp:'', clientRef:'' };
+    return { id:null, client:'', date, dateTouched:false, number:freshNumber(date), numAuto:true, items:[{ desc:settings.defaultDesc || '', rate:0 }], dp:0, clientAddr:'', clientNpwp:'', clientRef:'', color:defaultColor(), pay:null };
   }
   function renderItems(){
     const box = $('#items');
@@ -687,7 +835,7 @@ details.more summary b{color:var(--ink);font-weight:600}
     $('#coBox').open = !!(draft.clientAddr || draft.clientNpwp || draft.clientRef);
     $('#dpAmt').value = draft.dp ? fmtNum(draft.dp) : ''; $('#dpBox').open = !!draft.dp;
     $('#clientHint').hidden = true;
-    renderItems();
+    renderItems(); renderColorUI(); renderPayUI(); $('#payBox').open = !!(draft.pay && draft.pay.length);
     const editing = !!draft.id;
     $('#modeLabel').textContent = editing ? 'Mengedit invoice' : 'Invoice baru';
     $('#pageTitle').textContent = editing ? 'Edit invoice' : 'Invoice baru';
@@ -696,7 +844,7 @@ details.more summary b{color:var(--ink);font-weight:600}
   }
   function refreshLists(){
     const all = []; invoices.forEach(i => i.items.forEach(it => all.push(it.desc)));
-    const set = new Set([settings.defaultDesc, 'Owning Content'].concat(all).filter(Boolean));
+    const set = new Set([settings.defaultDesc, 'Owning Content'].concat(quickItems().filter(q => q.toLowerCase() !== 'owning content'), all).filter(Boolean));
     $('#descList').innerHTML = Array.from(set).map(v => '<option value="' + esc(v) + '">').join('');
     const seen = new Set(), names = [];
     invoices.slice().sort(byDateDesc).forEach(i => { const k = i.client.toLowerCase(); if(!seen.has(k)){ seen.add(k); names.push(i.client); } });
@@ -767,9 +915,9 @@ details.more summary b{color:var(--ink);font-weight:600}
     const src = invoices.find(x => x.id === draft.id) || draft;   // yang dipakai: versi tersimpan, bukan perubahan yang dibuang
     const date = todayISO();
     draft = { id:null, client:src.client, date, dateTouched:false, number:freshNumber(date), numAuto:true, items:copyItems(src.items),
-      dp:0, clientAddr:src.clientAddr || '', clientNpwp:src.clientNpwp || '', clientRef:'' };   // order baru: alamat & NPWP sama, DP dan nomor dari klien kosong
+      dp:0, clientAddr:src.clientAddr || '', clientNpwp:src.clientNpwp || '', clientRef:'', color:(validColor(src.color) && colorAllowed(src.color)) ? src.color : defaultColor(), pay:(src.pay && src.pay.length) ? cleanMethods(src.pay) : null };   // order baru: alamat & NPWP sama, DP dan nomor dari klien kosong
     fillForm(); window.scrollTo({top:0,behavior:'smooth'});
-    const h = $('#clientHint'); h.textContent = 'Duplikat siap. Cek tanggal dan rate, lalu simpan.'; h.hidden = false;
+    const h = $('#clientHint'); h.textContent = 'Salinan siap. Cek tanggal dan rate, lalu simpan.'; h.hidden = false;
   });
 
   /* ---------- simpan / hapus ---------- */
@@ -783,7 +931,8 @@ details.more summary b{color:var(--ink);font-weight:600}
     if(!validate()) return null;
     const items = cleanItems();
     const rec = { id:draft.id, client:draft.client.trim(), date:draft.date, number:(draft.number || '').trim(), items, total:sumItems(items),
-      dp:cleanRate(draft.dp), clientAddr:(draft.clientAddr || '').trim().slice(0, 200), clientNpwp:(draft.clientNpwp || '').trim().slice(0, 30), clientRef:(draft.clientRef || '').trim().slice(0, 40) };
+      dp:cleanRate(draft.dp), clientAddr:(draft.clientAddr || '').trim().slice(0, 200), clientNpwp:(draft.clientNpwp || '').trim().slice(0, 30), clientRef:(draft.clientRef || '').trim().slice(0, 40), color:validColor(draft.color) || 'biru' };
+    const pay = (draft.pay && draft.pay.length) ? cleanMethods(draft.pay) : []; if(pay.length) rec.pay = pay;
     // Nama klien diganti pada invoice yang sudah tersimpan: kemungkinan besar ini order baru, jangan menimpa yang lama diam-diam.
     if(rec.id){
       const old = invoices.find(x => x.id === rec.id);
@@ -809,15 +958,35 @@ details.more summary b{color:var(--ink);font-weight:600}
     persist(); noteNumber(rec.number); refreshLists(); renderHistory(); renderBanner(); fillForm();
     return rec;
   }
-  $('#btnSave').addEventListener('click', async () => { if(await save()) toast('Tersimpan di Riwayat'); });
+  // Simpan: invoice baru -> tersimpan lalu form dikosongkan; invoice lama yang diedit -> tersimpan lalu kembali ke Riwayat.
+  window.__save = save;   // untuk pengujian
+  $('#btnSave').addEventListener('click', async () => {
+    const wasEditing = !!draft.id;
+    if(!(await save())) return;
+    draft = newDraft(); fillForm();
+    if(wasEditing){ showTab('history'); toast('Perubahan tersimpan'); }
+    else { window.scrollTo({ top:0, behavior:'smooth' }); toast('Tersimpan. Form baru siap.'); }
+  });
   // Hapus satu invoice (dari form atau dari Riwayat). Nomornya tidak dipakai ulang oleh invoice berikutnya.
   async function deleteInvoice(rec){
     const c = await choose('Hapus invoice "' + rec.client + '" (' + fmtRp(rec.total) + ', ' + fmtDate(rec.date) + (rec.number ? ', ' + rec.number : '') + ')? Tidak bisa dikembalikan.', ['Ya, hapus', 'Batal']);
     if(c !== 0) return;
     invoices = invoices.filter(x => x.id !== rec.id); persist(); refreshLists(); renderHistory();
     if(draft && draft.id === rec.id){ draft = newDraft(); fillForm(); }
-    toast('Invoice dihapus');
+    showUndo(rec);
   }
+  // Batalkan hapus: invoice yang baru dihapus bisa dikembalikan selama beberapa detik
+  let undoRec = null, undoT;
+  function hideUndo(){ $('#undoBar').hidden = true; undoRec = null; clearTimeout(undoT); }
+  function showUndo(rec){
+    undoRec = rec; $('#undoText').textContent = 'Invoice "' + rec.client + '" dihapus'; $('#undoBar').hidden = false;
+    clearTimeout(undoT); undoT = setTimeout(hideUndo, 8000);
+  }
+  $('#undoBtn').addEventListener('click', () => {
+    const rec = undoRec; if(!rec) return;
+    if(!invoices.some(x => x.id === rec.id)) invoices.push(rec);
+    persist(); refreshLists(); renderHistory(); renderBanner(); hideUndo(); toast('Invoice dikembalikan');
+  });
   $('#btnDelete').addEventListener('click', () => { const rec = invoices.find(x => x.id === draft.id); if(rec) deleteInvoice(rec); });
 
   /* ---------- kirim / unduh file ---------- */
@@ -1229,6 +1398,7 @@ details.more summary b{color:var(--ink);font-weight:600}
     applyTheme();
     Object.keys(sMap).forEach(sel => { $(sel).value = settings[sMap[sel]] || ''; });
     $('#sAuto').checked = !!settings.autoNumber;
+    $('#sQuick').value = quickItems().join('\n'); renderMethodRows(); renderQuick();
     $('#sRemind').value = String(settings.backupDays);
     if($('#sRemind').value !== String(settings.backupDays)) $('#sRemind').value = '20';
   }
@@ -1236,11 +1406,162 @@ details.more summary b{color:var(--ink);font-weight:600}
     $(sel).addEventListener('input', e => {
       settings[sMap[sel]] = e.target.value; store.set('inv-settings', settings);
       if(sel === '#sDesc' && !draft.id && !draft.client && draft.items.length === 1 && !draft.items[0].rate){ draft.items[0].desc = e.target.value; renderItems(); }
-      refreshLists(); renderPreview();
+      refreshLists(); renderPayUI(); renderPreview();
     });
   });
   $('#sAuto').addEventListener('change', e => { settings.autoNumber = e.target.checked; store.set('inv-settings', settings); });
   $('#sRemind').addEventListener('change', e => { settings.backupDays = parseInt(e.target.value, 10) || 0; store.set('inv-settings', settings); renderBanner(); });
+
+  /* ---------- pilihan warna invoice ---------- */
+  function swatchesHTML(current){
+    const isCustom = HEX.test(current || ''), cur = colorInfo(current);
+    return PRESETS.map(p => {
+      const locked = p.lock && !isUnlocked(), on = p.id === current;
+      return '<button type="button" class="swb' + (on ? ' on' : '') + (locked ? ' locked' : '') + '" data-c="' + p.id + '" style="--g1:' + p.g1 + ';--g2:' + p.g2 + '" aria-pressed="' + on + '" aria-label="' + p.name + (locked ? ' (dikunci oleh ' + LOCK_OWNER + ')' : '') + '">' + (locked ? '<span class="lk" aria-hidden="true">🔒</span>' : '') + '</button>';
+    }).join('') +
+      '<button type="button" class="swb cust' + (isCustom ? ' set on' : '') + '" data-c="custom"' + (isCustom ? ' style="--g1:' + cur.g1 + ';--g2:' + cur.g2 + '"' : '') + ' aria-pressed="' + isCustom + '" aria-label="Warna kustom">' + (isCustom ? '' : '<span class="pl" aria-hidden="true">+</span>') + '</button>' +
+      '<input type="color" class="swcolor" tabindex="-1" aria-hidden="true" value="' + (isCustom ? current : '#8e24aa') + '">';
+  }
+  // Pilih warna; Biru (atau warna mirip Biru) hanya bisa dipakai kalau kuncinya sudah dibuka di perangkat ini.
+  async function pickColor(c, apply){
+    if(!colorAllowed(c)){
+      if(HEX.test(c)){ toast('Warna ini mirip Biru yang dikunci oleh ' + LOCK_OWNER + '. Pilih warna lain.'); return; }
+      if(!(await askCode())) return;
+      toast('Biru terbuka di perangkat ini');
+    }
+    apply(c); renderColorUI();
+  }
+  function bindSwatches(box, apply){
+    box.addEventListener('click', e => {
+      if(e.target.classList.contains('swcolor')) return;
+      const b = e.target.closest('.swb'); if(!b) return;
+      if(b.dataset.c === 'custom'){ box.querySelector('.swcolor').click(); return; }
+      pickColor(b.dataset.c, apply);
+    });
+    box.addEventListener('change', e => { if(e.target.classList.contains('swcolor')) pickColor(e.target.value.toLowerCase(), apply); });
+  }
+  function renderColorUI(){
+    if(!draft) return;
+    const cur = validColor(draft.color) || 'biru', def = defaultColor();
+    $('#swCreate').innerHTML = swatchesHTML(cur);
+    $('#swSettings').innerHTML = swatchesHTML(def);
+    $('#colorSummary').textContent = colorInfo(cur).name;
+    const note = isUnlocked() ? '' : '🔒 Biru dikunci oleh ' + LOCK_OWNER + '.';
+    $('#swNoteCreate').textContent = note; $('#swNoteSettings').textContent = note;
+    $('#btnRelock').hidden = !isUnlocked();
+  }
+  bindSwatches($('#swCreate'), c => { draft.color = c; renderPreview(); });
+  bindSwatches($('#swSettings'), c => {
+    settings.color = c; store.set('inv-settings', settings);
+    if(!draft.id && !draft.client.trim() && draft.items.length === 1 && !draft.items[0].rate) draft.color = c;   // form masih kosong: ikut warna bawaan baru
+    renderPreview();
+  });
+  /* ---------- metode pembayaran ---------- */
+  // Daftar pilihan di tab Buat: metode utama + metode lain dari Pengaturan (+ metode lama di invoice yang sudah dihapus dari Pengaturan)
+  function payOptions(){
+    const list = [{ bank:settings.bank || '', account:settings.account || '', main:true }];
+    extraMethods().forEach(m => { if(!list.some(x => mKey(x) === mKey(m))) list.push(m); });
+    (draft && draft.pay || []).forEach(p => { if(!list.some(x => mKey(x) === mKey(p))) list.push({ bank:p.bank, account:p.account, gone:true }); });
+    return list;
+  }
+  function renderPayUI(){
+    if(!draft) return;
+    const opts = payOptions();
+    const sel = (draft.pay && draft.pay.length) ? draft.pay.map(mKey) : [mKey(opts[0])];
+    $('#payList').innerHTML = opts.map((m, i) => '<label class="paychk"><input type="checkbox" data-i="' + i + '"' + (sel.indexOf(mKey(m)) >= 0 ? ' checked' : '') + '><span>' + esc(m.bank || '(tanpa nama)') +
+      '<small>' + esc(m.account || '(belum diisi)') + (m.main ? ' · utama' : '') + (m.gone ? ' · tidak ada di Pengaturan' : '') + '</small></span></label>').join('');
+    const names = opts.filter(m => sel.indexOf(mKey(m)) >= 0).map(m => m.bank || m.account || 'belum diisi');
+    $('#paySummary').textContent = names.length > 2 ? names.length + ' metode' : names.join(' + ');
+    $('#payHint').textContent = opts.length > 1 ? 'Centang metode yang dicetak di invoice ini.' : 'Belum ada metode lain. Tambahkan di Pengaturan, lalu pilih di sini.';
+  }
+  $('#payList').addEventListener('change', e => {
+    const opts = payOptions();
+    const checked = Array.from(document.querySelectorAll('#payList input:checked')).map(c => opts[+c.dataset.i]).filter(Boolean);
+    if(!checked.length){ e.target.checked = true; toast('Pilih minimal satu metode'); return; }
+    draft.pay = (checked.length === 1 && checked[0].main) ? null : checked.map(m => ({ bank:m.bank, account:m.account }));
+    renderPayUI(); renderPreview();
+  });
+  function renderMethodRows(){
+    const rows = Array.isArray(settings.methods) ? settings.methods : [];
+    $('#sMethods').innerHTML = rows.map((m, i) => '<div class="mrow2" data-i="' + i + '"><input type="text" class="m-bank" placeholder="Bank / e-wallet (mis. DANA)" maxlength="60" autocomplete="off" value="' + esc(m.bank) + '">' +
+      '<input type="text" class="m-acc" placeholder="Nomor & atas nama" maxlength="80" autocomplete="off" value="' + esc(m.account) + '"><button type="button" class="linkbtn m-del">Hapus metode ini</button></div>').join('');
+    $('#btnAddMethod').hidden = rows.length >= 4;
+    if(rows.length) $('#mBox').open = true;
+  }
+  function saveMethods(){ store.set('inv-settings', settings); renderPayUI(); renderPreview(); }
+  $('#sMethods').addEventListener('input', e => {
+    const row = e.target.closest('.mrow2'); if(!row) return;
+    const m = settings.methods[+row.dataset.i]; if(!m) return;
+    if(e.target.classList.contains('m-bank')) m.bank = e.target.value; else if(e.target.classList.contains('m-acc')) m.account = e.target.value;
+    saveMethods();
+  });
+  $('#sMethods').addEventListener('click', e => {
+    const del = e.target.closest('.m-del'); if(!del) return;
+    settings.methods.splice(+del.closest('.mrow2').dataset.i, 1); renderMethodRows(); saveMethods();
+  });
+  $('#btnAddMethod').addEventListener('click', () => {
+    if(!Array.isArray(settings.methods)) settings.methods = [];
+    if(settings.methods.length >= 4) return;
+    settings.methods.push({ bank:'', account:'' }); renderMethodRows(); store.set('inv-settings', settings);
+    const ins = document.querySelectorAll('#sMethods .m-bank'); ins[ins.length - 1].focus();
+  });
+
+  /* ---------- item cepat ---------- */
+  function quickList(){
+    const out = ['Owning Content'];
+    quickItems().forEach(q => { if(!out.some(o => o.toLowerCase() === q.toLowerCase())) out.push(q); });
+    return out;
+  }
+  function renderQuick(){
+    const box = $('#quickRow'), list = quickList();
+    box.innerHTML = list.map((q, i) => '<button type="button" class="qchip" data-i="' + i + '">+ ' + esc(q) + '</button>').join('');
+    box.hidden = false;
+  }
+  $('#quickRow').addEventListener('click', e => {
+    const b = e.target.closest('.qchip'); if(!b) return;
+    const desc = quickList()[+b.dataset.i]; if(desc == null) return;
+    draft.items.push({ desc, rate:0 }); renderItems(); renderPreview();
+    const rates = document.querySelectorAll('.it-rate'); rates[rates.length - 1].focus();
+  });
+  $('#sQuick').addEventListener('input', e => {
+    settings.quick = e.target.value.split('\n').map(s => s.trim().slice(0, 60)).filter(Boolean).slice(0, 12);
+    store.set('inv-settings', settings); renderQuick(); refreshLists();
+  });
+
+  /* ---------- nama klien mirip ---------- */
+  const normName = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+  function lev(a, b){
+    const m = a.length, n = b.length; let prev = []; for(let j = 0; j <= n; j++) prev[j] = j;
+    for(let i = 1; i <= m; i++){ const cur = [i]; for(let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; }
+    return prev[n];
+  }
+  // Nama klien yang baru diketik mirip (bukan sama persis) dengan klien yang sudah ada?
+  function similarClient(name){
+    const raw = String(name || '').trim().toLowerCase(), n = normName(name); if(n.length < 4) return null;
+    if(invoices.some(i => i.client.trim().toLowerCase() === raw)) return null;
+    let best = null; const seen = {};
+    invoices.forEach(i => {
+      const k = i.client.trim().toLowerCase(); if(seen[k]) return; seen[k] = 1;
+      const c = normName(i.client); if(c.length < 4) return;
+      const d = lev(n, c), thr = Math.max(n.length, c.length) >= 10 ? 2 : 1;
+      if(d <= thr && (!best || d < best.d)) best = { name:i.client, d };
+    });
+    return best && best.name;
+  }
+  function checkSimilar(){
+    const h = $('#simHint'); h.hidden = true;
+    if(draft.id) return;
+    const s = similarClient(draft.client); if(!s) return;
+    $('#simText').textContent = 'Mirip dengan klien "' + s + '".'; $('#simUse').dataset.name = s; h.hidden = false;
+  }
+  $('#client').addEventListener('input', () => { $('#simHint').hidden = true; });
+  $('#client').addEventListener('change', checkSimilar);
+  $('#simUse').addEventListener('click', e => {
+    const name = e.currentTarget.dataset.name; if(!name) return;
+    $('#client').value = name; draft.client = name; $('#simHint').hidden = true; autofillFromClient(); renderPreview();
+  });
+
+  $('#btnRelock').addEventListener('click', () => { settings.unlock = ''; store.set('inv-settings', settings); renderColorUI(); toast('Biru dikunci lagi'); });
 
   $('#fileImport').addEventListener('change', e => {
     const f = e.target.files[0]; if(!f) return;
@@ -1257,6 +1578,10 @@ details.more summary b{color:var(--ink);font-weight:600}
         settings.autoNumber = settings.autoNumber !== false;
         settings.theme = ['auto', 'light', 'dark'].indexOf(settings.theme) >= 0 ? settings.theme : 'auto';
         ['bank', 'account', 'instagram', 'tiktok', 'defaultDesc'].forEach(k => { settings[k] = String(settings[k] == null ? '' : settings[k]); });
+        settings.methods = cleanMethods(settings.methods).slice(0, 4);
+        settings.quick = quickItems();
+        settings.color = validColor(settings.color) || 'biru';
+        settings.unlock = settings.unlock === LOCK_HASH ? LOCK_HASH : '';
         if(data.counters && typeof data.counters === 'object'){
           Object.keys(data.counters).forEach(k => { const n = parseInt(data.counters[k], 10); if(/^INV-\d{6}-$/.test(k) && n > (meta.counters[k] || 0)) meta.counters[k] = n; });
         }
